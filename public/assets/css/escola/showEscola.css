@@ -1,0 +1,73 @@
+.escola-page{ padding: 24px; }
+
+.escola-card{
+  max-width: 980px;
+  margin: 0 auto;
+  background:#fff;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.06);
+}
+
+.escola-title{
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: .4px;
+  text-align:center;
+  margin: 4px 0 18px;
+}
+
+.soft-input{
+  background:#e1e1e1;
+  border: 1px solid #d9d9d9;
+  border-radius: 999px;
+  padding: 10px 12px;
+}
+
+.file-box{
+  background:#e1e1e1;
+  border: 1px solid #d9d9d9;
+  border-radius: 999px;
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-pill{
+  background:#2f5b77;
+  border: 1px solid #2f5b77;
+  color:#fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+/* Botões ícone */
+.icon-btn{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display:grid;
+  place-items:center;
+  border:1px solid #e5e5e5;
+  background:#fff;
+  color:#111;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.icon-btn:hover{ filter: brightness(.98); }
+
+.icon-btn.neutral{
+  background:#f1f1f1;
+  border-color:#e3e3e3;
+  color:#333;
+}
+
+.icon-btn.success{
+  background:#e6f4ea;
+  border-color:#bfe3c9;
+  color:#163C25;
+}

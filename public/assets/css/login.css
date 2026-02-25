@@ -1,0 +1,80 @@
+body {
+    background-image: url("/assets/img/papelFundo.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card central */
+.login-card {
+    background: white;
+    width: 50%;
+    max-width: 95%;
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    padding: 40px;
+}
+
+/* Container interno */
+.containerLogin {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+/* Logo */
+.logo img {
+    width: 250px;
+}
+
+/* Formulário */
+form {
+    width: 300px;
+}
+
+/* Campos */
+.formLogin {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    border-color: #163C25;
+    box-shadow: 0 0 0 0.2rem rgba(247,197,110,0.3);
+}
+
+/* Botão personalizado */
+.btn-custom {
+    background-color: #163C25;
+    color: white;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 8px;
+    transition: 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #3A5A40;
+    color: black;
+}

@@ -1,0 +1,142 @@
+/* Página */
+.aluno-page{
+  padding: 24px;
+}
+
+/* Card principal */
+.aluno-card{
+  max-width: 980px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.06);
+}
+
+/* Título */
+.aluno-title{
+  text-align: center;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: .4px;
+  margin: 4px 0 18px;
+}
+
+/* Seções */
+.section-title{
+  font-weight: 800;
+  font-size: 14px;
+  margin: 18px 0 10px;
+}
+
+/* Inputs “cinza arredondado” */
+.soft-input{
+  background: #e9e9e9;
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.soft-input:focus{
+  background: #efefef;
+  border-color: #cfcfcf;
+  box-shadow: none;
+}
+
+.soft-textarea{
+  resize: none;
+}
+
+/* Radios dentro de um bloco */
+.soft-radio{
+  background: #e9e9e9;
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Upload box */
+.upload-box {
+  width: 180px;        
+  height: 200px;       
+  margin: 0 auto;      
+  border-radius: 12px;
+  background: #e9e9e9;
+  border: 1px solid #e2e2e2;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;    
+}
+
+.upload-icon{
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.upload-text{
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Observação */
+.obs-box{
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px dashed #d6d6d6;
+  padding: 14px;
+  font-size: 13px;
+  color: #333;
+}
+
+/* Botões */
+.btn-soft-primary{
+  background: #163C25;
+  border: 1px solid #163C25;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.btn-soft-primary:hover{
+  background: #0f2b1a;
+  border-color: #0f2b1a;
+  color: #fff;
+}
+
+.btn-soft-secondary{
+  background: #f1f1f1;
+  border: 1px solid #e3e3e3;
+  color: #333;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+/* Chips (checkbox bonitinho) */
+.chips{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e9e9e9;
+  border: 1px solid #e2e2e2;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+}
+
+.chip input{
+  transform: translateY(1px);
+}

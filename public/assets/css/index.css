@@ -1,0 +1,149 @@
+/* ===== Tela Inicial ===== */
+.divTelaInicial{
+  width: 100%;
+  min-height: 100vh;           /* preenche a altura toda do conteúdo */
+  background-color: #163C25;   /* fundo verde */
+  border-radius: 5px;
+  max-width: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 28px 0;             /* respiro interno */
+  gap: 34px;                   /* espaço entre as seções */
+}
+
+/* Cards (as duas seções) */
+.alunosMatriculados,
+.horariosAgendados{
+  width: 90%;
+  background-color: #ffffff;
+  border-radius: 8px;
+
+  padding: 12px 14px 14px;
+  box-sizing: border-box;
+
+  /* remove o margin-top gigante e usa o gap do container */
+  margin-top: 0;
+}
+
+/* Header da seção de horários */
+.cardPainelHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+/* Títulos */
+.cardTitle{
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1f1f1f;
+}
+
+.cardDate{
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+/* ===== Tabela Alunos ===== */
+.tabelaAlunos{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: #1f1f1f;
+}
+
+.tabelaAlunos th{
+  text-align: left;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-bottom: 1px solid #7c7c7c;  /* "hr" do cabeçalho */
+}
+
+.tabelaAlunos td{
+  padding: 8px 10px;
+  vertical-align: top;
+  border-bottom: 1px solid #7c7c7c;  /* "hr" entre linhas */
+}
+
+.tabelaAlunos tbody tr:last-child td{
+  border-bottom: none;
+}
+
+/* ===== Tabela Agenda ===== */
+.tabelaAgenda{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: #1f1f1f;
+}
+
+.tabelaAgenda th{
+  text-align: center;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-bottom: 1px solid #7c7c7c;  /* "hr" do cabeçalho */
+}
+
+.tabelaAgenda td{
+  vertical-align: top;
+  padding: 10px 10px;
+  border-bottom: 1px solid #7c7c7c;  /* "hr" entre linhas */
+}
+
+.tabelaAgenda tbody tr:last-child td{
+  border-bottom: none;
+}
+
+/* Labels "Profissional/Aluno" */
+.tabelaAgenda strong{
+  font-weight: 800;
+}
+
+/* ===== Botão Ver mais ===== */
+.cardActions{
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.btnVerMais{
+  display: inline-block;
+  background: #d9a64a;
+  color: #111;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 12px;
+
+  padding: 8px 28px;
+  border-radius: 8px;
+
+  transition: transform .08s ease, filter .12s ease;
+}
+
+.btnVerMais:hover{
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 900px){
+  .alunosMatriculados,
+  .horariosAgendados{
+    width: calc(100% - 24px);
+  }
+
+  /* tabelas rolando no horizontal no celular */
+  .tabelaAlunos,
+  .tabelaAgenda{
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
