@@ -54,9 +54,24 @@
           <input type="text" name="profissao" class="form-control soft-input" required>
         </div>
 
-        <div class="col-12 col-md-3">
-          <label class="form-label">Formação</label>
-          <input type="text" name="formacao" class="form-control soft-input" placeholder="Ex: Graduação em...">
+        <div class="col-12 col-md-6">
+          <label class="form-label">Formações</label>
+
+          <div id="formacoes-wrapper">
+            <div class="formacao-item d-flex gap-2 mb-2">
+              <input 
+                type="text" 
+                name="formacoes[]" 
+                class="form-control soft-input"
+                placeholder="Ex: Graduação em Psicologia"
+              >
+              <button type="button" class="btn-remove d-none">✕</button>
+            </div>
+          </div>
+
+          <button type="button" id="add-formacao" class="btn-add">
+            + Adicionar formação
+          </button>
         </div>
 
         <div class="col-12 col-md-3">
@@ -64,8 +79,8 @@
           <input type="text" name="especializacao" class="form-control soft-input" placeholder="Ex: ABA, TEA, Neuro...">
         </div>
 
-        {{-- Espaço em branco (pra ficar como a imagem) --}}
-        <div class="col-12 col-md-3 d-none d-md-block"></div>
+        {{-- Nova linha para organizar o layout --}}
+        <div class="w-100"></div>
 
         {{-- Upload --}}
         <div class="col-12 col-md-4">
@@ -91,5 +106,44 @@
 
   </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+  const addBtn = document.getElementById('add-formacao');
+  const wrapper = document.getElementById('formacoes-wrapper');
+
+  if(addBtn){
+
+    addBtn.addEventListener('click', function(){
+
+      const div = document.createElement('div');
+      div.classList.add('formacao-item','d-flex','gap-2','mb-2');
+
+      div.innerHTML = `
+        <input 
+          type="text" 
+          name="formacoes[]" 
+          class="form-control soft-input"
+          placeholder="Ex: Pós-graduação em ABA"
+        >
+        <button type="button" class="btn-remove">✕</button>
+      `;
+
+      wrapper.appendChild(div);
+    });
+
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target.classList.contains('btn-remove')){
+      e.target.parentElement.remove();
+    }
+  });
+
+});
+</script>
+@endpush
 
 @endsection

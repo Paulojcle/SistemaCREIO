@@ -16,31 +16,53 @@
 
   <div class="login-card">
 
+  @if (session('erro'))
+          <div class="alert-container">
+              <div class="alert alert-danger text-center">
+                  {{ session('erro') }}
+              </div>
+          </div>
+  @endif
+
   <div class="containerLogin">
       <div class="logo">
         <img src="{{ asset('assets/img/logoCreio.png') }}" alt="">
       </div>
 
-      <form>
+      <form action="{{ route('login.auth') }}" method="POST">
+        @csrf
+
         <div class="formLogin">
-            <div class="usuario">
-            <label for="usuario" class="form-label">Usuário</label>
-            <input type="text" class="form-control" id="usuario" placeholder="Digite seu usuário">
+          <div class="usuario">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              placeholder="Digite seu email"
+              value="{{ old('email') }}"
+              required
+            >
           </div>
+
           <div class="senha">
-            <label for="senha" class="form-label">Senha</label>
-            <input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
+            <label for="password" class="form-label">Senha</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              placeholder="Digite sua senha"
+              required
+            >
           </div>
         </div>
-        
+
         <button type="submit" class="btn btn-custom w-100">ENTRAR</button>
       </form>
-    </div>
   </div>
-    
-
- 
-
+  </div>
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

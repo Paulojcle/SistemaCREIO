@@ -70,7 +70,7 @@
   place-items: center;
   text-align: center;
   cursor: pointer;
-  overflow: hidden;    
+  overflow: hidden;   
 }
 
 .upload-icon{
@@ -139,4 +139,38 @@
 
 .chip input{
   transform: translateY(1px);
+}
+
+/* ============================= */
+/* SEÇÃO MÉTRICAS DO NÚCLEO */
+/* ============================= */
+
+.metric-section{
+  background: #f0f5f2;
+  border: 1px solid #d9e4dd;
+  border-left: 5px solid #163C25;
+  border-radius: 14px;
+  padding: 25px;
+}
+
+.metric-title{
+  font-weight: 800;
+  font-size: 16px;
+  color: #163C25;
+  margin-bottom: 5px;
+}
+
+.metric-subtitle{
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.metric-chip{
+  background: #ffffff;
+  border: 1px solid #d9e4dd;
+}
+
+.metric-chip:hover{
+  background: #e8f1ec;
 }

@@ -243,6 +243,150 @@
 
       
 
+
+
+      
+{{-- ============================= --}}
+{{-- SEÇÃO DE MÉTRICAS DO NÚCLEO --}}
+{{-- ============================= --}}
+
+<div class="metric-section mt-5">
+
+  <h2 class="metric-title">
+    📊 Informações para Metrificação do Núcleo
+  </h2>
+
+  <p class="metric-subtitle">
+    Dados utilizados para relatórios estatísticos e planejamento institucional
+  </p>
+
+  <div class="row g-4 mt-2">
+
+    {{-- Tipo de Deficiência --}}
+    <div class="col-12">
+      <label class="form-label">Tipo de Deficiência</label>
+
+      <div class="chips metric-chips">
+        @php
+          $deficiencias = [
+            'Deficiência Intelectual',
+            'Deficiência Física',
+            'Deficiência Auditiva',
+            'Deficiência Visual',
+            'Deficiência Múltipla'
+          ];
+        @endphp
+
+        @foreach($deficiencias as $d)
+          <label class="chip metric-chip">
+            <input type="checkbox" name="deficiencias[]" value="{{ $d }}">
+            <span>{{ $d }}</span>
+          </label>
+        @endforeach
+      </div>
+
+      <input 
+        type="text"
+        name="outra_deficiencia"
+        class="form-control soft-input mt-3"
+        placeholder="Caso não esteja na lista, informe o tipo de deficiência"
+      >
+    </div>
+
+    {{-- Diagnósticos --}}
+    <div class="col-12">
+      <label class="form-label">Diagnósticos Clínicos</label>
+
+      <div class="chips metric-chips">
+        @php
+          $diagnosticos = [
+            'TEA',
+            'TDAH',
+            'TOD',
+            'Dislexia',
+            'Síndrome de Down',
+            'Paralisia Cerebral'
+          ];
+        @endphp
+
+        @foreach($diagnosticos as $diag)
+          <label class="chip metric-chip">
+            <input type="checkbox" name="diagnosticos[]" value="{{ $diag }}">
+            <span>{{ $diag }}</span>
+          </label>
+        @endforeach
+      </div>
+
+      <input 
+        type="text"
+        name="outro_diagnostico"
+        class="form-control soft-input mt-3"
+        placeholder="Caso não esteja na lista, informe o diagnóstico"
+      >
+    </div>
+
+    {{-- Grau de suporte --}}
+    <div class="col-12 col-md-4">
+      <label class="form-label">Grau de Suporte</label>
+      <select name="grau_suporte" class="form-select soft-input">
+        <option value="">Selecione</option>
+        <option value="Nível 1">Nível 1 (Leve)</option>
+        <option value="Nível 2">Nível 2 (Moderado)</option>
+        <option value="Nível 3">Nível 3 (Intenso)</option>
+      </select>
+    </div>
+
+    {{-- Possui laudo --}}
+    <div class="col-12 col-md-4">
+      <label class="form-label">Possui Laudo Médico?</label>
+      <select name="possui_laudo" class="form-select soft-input">
+        <option value="">Selecione</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+      </select>
+    </div>
+
+    {{-- Atendimento pelo núcleo --}}
+    <div class="col-12 col-md-4">
+      <label class="form-label">Já recebe atendimento no Núcleo?</label>
+      <select name="atendimento_nucleo" class="form-select soft-input">
+        <option value="">Selecione</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+      </select>
+    </div>
+
+    {{-- Origem do encaminhamento --}}
+    <div class="col-12 col-md-6">
+      <label class="form-label">Origem do Encaminhamento</label>
+      <select name="origem_encaminhamento" class="form-select soft-input">
+        <option value="">Selecione</option>
+        <option value="Escola">Escola</option>
+        <option value="Conselho Tutelar">Conselho Tutelar</option>
+        <option value="Ordem Judicial">Ordem Judicial</option>
+        <option value="Procura Espontânea">Procura Espontânea</option>
+        <option value="Outro">Outro</option>
+      </select>
+    </div>
+
+    {{-- Data diagnóstico --}}
+    <div class="col-12 col-md-6">
+      <label class="form-label">Data do Diagnóstico</label>
+      <input type="date" name="data_diagnostico" class="form-control soft-input">
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
       <div class="mt-4">
           <label class="form-label">Anexar documentos (opcional)</label>
       

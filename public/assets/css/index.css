@@ -1,149 +1,213 @@
-/* ===== Tela Inicial ===== */
-.divTelaInicial{
-  width: 100%;
-  min-height: 100vh;           /* preenche a altura toda do conteúdo */
-  background-color: #163C25;   /* fundo verde */
-  border-radius: 5px;
-  max-width: none;
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+/* Remove comportamento padrão de links */
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ============================= */
+/* DASHBOARD BASE */
+/* ============================= */
+
+.dashboard{
+  min-height: 100vh;
+  padding: 50px 6%;
+  background-color: #163C25; /* Fundo verde */
   display: flex;
   flex-direction: column;
-  align-items: center;
-
-  padding: 28px 0;             /* respiro interno */
-  gap: 34px;                   /* espaço entre as seções */
+  gap: 50px;
 }
 
-/* Cards (as duas seções) */
-.alunosMatriculados,
-.horariosAgendados{
-  width: 90%;
-  background-color: #ffffff;
-  border-radius: 8px;
+/* ============================= */
+/* HEADER */
+/* ============================= */
 
-  padding: 12px 14px 14px;
-  box-sizing: border-box;
-
-  /* remove o margin-top gigante e usa o gap do container */
-  margin-top: 0;
+.dashboard-header{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-/* Header da seção de horários */
-.cardPainelHeader{
+.dashboard-header h1{
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #ffffff; /* Branco para contrastar */
+}
+
+.dashboard-header p{
+  font-size: 14px;
+  color: rgba(255,255,255,0.75);
+}
+
+/* ============================= */
+/* MÉTRICAS PRINCIPAIS */
+/* ============================= */
+
+.metrics{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+}
+
+.metric-card{
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 26px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 18px;
+  border: 1px solid #e8e8e8;
+  transition: all .25s ease;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.metric-card:hover{
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.08);
+  cursor: pointer;
+}
+
+/* Ícone */
+.metric-icon{
+  font-size: 22px;
+  background: #f2f4f3;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+/* Número */
+.metric-card h2{
+  font-size: 26px;
+  font-weight: 700;
+  color: #163C25; /* Verde institucional */
+}
+
+/* Texto */
+.metric-card span{
+  font-size: 13px;
+  color: #555;
+}
+
+/* Card destacado */
+.metric-card.highlight{
+  background: #0f2f1f;
+  border: none;
+}
+
+.metric-card.highlight h2,
+.metric-card.highlight span{
+  color: #ffffff;
+}
+
+.metric-card.highlight .metric-icon{
+  background: rgba(255,255,255,.15);
+}
+
+/* ============================= */
+/* SEÇÕES */
+/* ============================= */
+
+.dashboard-section{
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid #e8e8e8;
+}
+
+.dashboard-section h3{
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #163C25;
+}
+
+/* ============================= */
+/* MINI CARDS */
+/* ============================= */
+
+.mini-cards{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 18px;
+}
+
+.mini-card{
+  background: #fafafa;
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid #eeeeee;
+  text-align: center;
+  transition: all .2s ease;
+  position: relative;
+}
+
+.mini-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.05);
+  border-color: #dcdcdc;
+  cursor: pointer;
+}
+
+.mini-card strong{
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #163C25;
   margin-bottom: 6px;
 }
 
-/* Títulos */
-.cardTitle{
-  margin: 0 0 6px 0;
-  font-size: 14px;
-  font-weight: 800;
-  color: #1f1f1f;
+.mini-card span{
+  font-size: 13px;
+  color: #666;
 }
 
-.cardDate{
+/* ============================= */
+/* MICRO INTERAÇÃO */
+/* ============================= */
+
+.metric-card::after{
+  content: "Ver detalhes →";
+  position: absolute;
+  bottom: 10px;
+  right: 22px;
   font-size: 12px;
   font-weight: 600;
-  color: #1f1f1f;
+  color: #888;
+  opacity: 0;
+  transition: all .2s ease;
 }
 
-/* ===== Tabela Alunos ===== */
-.tabelaAlunos{
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  color: #1f1f1f;
+.mini-card::after{
+  content: "Ver detalhes→";
+  position: absolute;
+  bottom: 10px;
+  right: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  opacity: 0;
+  transition: all .2s ease;
 }
 
-.tabelaAlunos th{
-  text-align: left;
-  font-weight: 700;
-  padding: 6px 10px;
-  border-bottom: 1px solid #7c7c7c;  /* "hr" do cabeçalho */
+.metric-card:hover::after,
+.mini-card:hover::after{
+  opacity: 1;
+  transform: translateX(4px);
 }
 
-.tabelaAlunos td{
-  padding: 8px 10px;
-  vertical-align: top;
-  border-bottom: 1px solid #7c7c7c;  /* "hr" entre linhas */
-}
+/* ============================= */
+/* RESPONSIVO */
+/* ============================= */
 
-.tabelaAlunos tbody tr:last-child td{
-  border-bottom: none;
-}
-
-/* ===== Tabela Agenda ===== */
-.tabelaAgenda{
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  color: #1f1f1f;
-}
-
-.tabelaAgenda th{
-  text-align: center;
-  font-weight: 700;
-  padding: 6px 10px;
-  border-bottom: 1px solid #7c7c7c;  /* "hr" do cabeçalho */
-}
-
-.tabelaAgenda td{
-  vertical-align: top;
-  padding: 10px 10px;
-  border-bottom: 1px solid #7c7c7c;  /* "hr" entre linhas */
-}
-
-.tabelaAgenda tbody tr:last-child td{
-  border-bottom: none;
-}
-
-/* Labels "Profissional/Aluno" */
-.tabelaAgenda strong{
-  font-weight: 800;
-}
-
-/* ===== Botão Ver mais ===== */
-.cardActions{
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.btnVerMais{
-  display: inline-block;
-  background: #d9a64a;
-  color: #111;
-  text-decoration: none;
-  font-weight: 800;
-  font-size: 12px;
-
-  padding: 8px 28px;
-  border-radius: 8px;
-
-  transition: transform .08s ease, filter .12s ease;
-}
-
-.btnVerMais:hover{
-  filter: brightness(0.96);
-  transform: translateY(-1px);
-}
-
-/* ===== Responsivo ===== */
-@media (max-width: 900px){
-  .alunosMatriculados,
-  .horariosAgendados{
-    width: calc(100% - 24px);
-  }
-
-  /* tabelas rolando no horizontal no celular */
-  .tabelaAlunos,
-  .tabelaAgenda{
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+@media(max-width:768px){
+  .dashboard{
+    padding: 40px 20px;
   }
 }

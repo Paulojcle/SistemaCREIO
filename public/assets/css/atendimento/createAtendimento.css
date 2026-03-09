@@ -1,0 +1,191 @@
+:root{
+  --green: #163C25;
+  --green-2: #1F4D31;
+
+  --border: #CFE1D6;
+  --soft: #EAF3EE;
+
+  --text: #1f1f1f;
+  --muted: #6b6b6b;
+}
+
+.sidebar,
+.sidebar * {
+  color: #fff !important;
+}
+
+.la-page{
+  padding: 26px 28px;
+}
+
+/* ====== BUSCA ====== */
+.la-search-wrap{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.la-search-card{
+  width: min(740px, 100%);
+  background: var(--green);
+  border: 2px solid var(--green);
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.06);
+}
+
+.la-search-icon{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+  color: #fff;
+  font-size: 18px;
+}
+
+.la-search-form{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.la-input{
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  color: var(--text);
+}
+
+.la-input:focus{
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.22);
+}
+
+.la-btn{
+  background: #fff;
+  color: var(--green);
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 900;
+  transition: .2s ease;
+}
+
+.la-btn:hover{
+  background: #e9eeeb;
+}
+
+/* ====== QUADRO ====== */
+.la-board{
+  background: var(--green);
+  border: 3px solid var(--green);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.la-board-head{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+
+  margin-bottom: 12px;
+}
+
+.la-board-title{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--green);
+}
+
+.la-pill{
+  background: var(--soft);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--green);
+}
+
+/* ====== TABELA ====== */
+.la-table-wrap{
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.la-table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.la-table thead th{
+  text-align: left;
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 900;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+
+.la-table tbody td{
+  font-size: 12px;
+  color: var(--text);
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+.la-table tbody tr:hover{
+  background: #f7faf8;
+}
+
+.col-id{ width: 60px; }
+.col-acoes{ width: 120px; }
+
+/* ====== AÇÕES ====== */
+.la-icon{
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--green);
+  background: var(--soft);
+  color: var(--green);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  margin-right: 6px;
+  transition: .2s ease;
+}
+
+.la-icon:hover{
+  background: var(--green);
+  color: #fff;
+}
+
+/* ====== RESPONSIVO ====== */
+@media (max-width: 768px){
+  .la-search-form{
+    grid-template-columns: 1fr;
+  }
+
+  .col-escola, .col-filiacao{
+    display: none;
+  }
+
+  .col-acoes{
+    width: 100px;
+  }
+}

@@ -1,0 +1,254 @@
+:root{
+  --green: #163C25;
+  --green-2: #1F4D31;
+  --bg: #F4E3B2;
+
+  --panel: #ffffff;
+  --soft: #EAF3EE;
+  --border: #CFE1D6;
+
+  --muted: #6b6b6b;
+  --danger: #b02a37;
+
+  --text: #1f1f1f;
+}
+
+.sidebar,
+.sidebar * {
+  color: #fff !important;
+}
+
+.ag-page{
+  padding: 26px 28px;
+}
+
+/* ====== FILTRO ====== */
+.ag-filter-wrap{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.ag-filter-card{
+  width: min(520px, 100%);
+
+  /* ✅ mesmo fundo do quadro principal */
+  background: var(--green);
+
+  border: 2px solid var(--green);
+  border-radius: 10px;
+  padding: 12px 14px 14px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.06);
+}
+
+/* ✅ texto preto somente dentro do filtro */
+.ag-filter-card,
+.ag-filter-card *{
+  color: var(--text);
+}
+
+.ag-filter-title{
+  text-align: center;
+  font-weight: 900;
+
+  /* título destacado */
+  color: #fff;
+
+  margin-bottom: 8px;
+}
+
+.ag-filter-form{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.ag-input{
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  outline: none;
+
+  /* input branco */
+  background: #fff;
+  color: var(--text);
+}
+
+.ag-input:focus{
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.22);
+}
+
+.ag-btn{
+  grid-column: 1 / -1;
+  justify-self: center;
+
+  /* botão claro sobre verde */
+  background: #fff;
+  color: var(--green);
+
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 22px;
+  font-weight: 900;
+  transition: .2s ease;
+}
+
+.ag-btn:hover{
+  background: #e9eeeB;
+}
+
+/* ====== QUADRO (Horários agendados) ====== */
+.ag-board{
+  /* ✅ mesmo fundo do filtro */
+  background: var(--green);
+
+  border: 3px solid var(--green);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+/* ✅ texto preto somente dentro do quadro */
+.ag-board,
+.ag-board *{
+  color: var(--text);
+}
+
+.ag-board-head{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+
+  /* cabeçalho claro por cima do fundo verde */
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.ag-board-title{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+
+  /* destaque verde (igual ao modelo) */
+  color: var(--green);
+}
+
+.ag-date{
+  font-weight: 900;
+  color: var(--green);
+  font-size: 13px;
+  text-align: right;
+}
+
+.ag-board-sub{
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ====== GRADE ====== */
+.ag-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* coluna branca (igual ao modelo) */
+.ag-col{
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+}
+
+.ag-col-time{
+  text-align: center;
+  font-weight: 900;
+  color: var(--green);
+  font-size: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+/* ====== CARD ====== */
+.ag-card{
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  margin-bottom: 10px;
+}
+
+.ag-row{
+  font-size: 12px;
+  line-height: 1.25;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+/* label “Nome/Profissional/Aluno” em verde */
+.ag-row span{
+  font-weight: 900;
+  color: var(--green);
+  margin-right: 6px;
+}
+
+/* ====== AÇÕES ====== */
+.ag-actions{
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ag-icon{
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--green);
+  background: var(--soft);
+  color: var(--green);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.ag-icon:hover{
+  background: var(--green);
+  color: #fff;
+}
+
+.ag-icon.danger{
+  border-color: var(--danger);
+  color: var(--danger);
+  background: #fcebec;
+}
+
+.ag-icon.danger:hover{
+  background: var(--danger);
+  color: #fff;
+}
+
+/* ====== RESPONSIVO ====== */
+@media (max-width: 992px){
+  .ag-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .ag-filter-form{
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
