@@ -1,137 +1,43 @@
 @extends('layouts.app')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('assets/css/escola/createEscola.css') }}">
-<style>
-  .escola-page {
-    padding: 24px;
-  }
-
-  .escola-card {
-    max-width: 980px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 16px;
-    padding: 22px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
-  }
-
-  .escola-title {
-    font-weight: 800;
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .current-docs {
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 15px;
-    border: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-  }
-
-  .doc-old-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background: #fff;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    border: 1px solid #eee;
-  }
-
-  .doc-old-item span {
-    flex: 1;
-  }
-
-  .doc-old-item form button {
-    font-size: 12px;
-    padding: 2px 6px;
-  }
-
-  .lista-documentos li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 10px;
-    background: #f5f5f5;
-    border-radius: 6px;
-    margin-bottom: 5px;
-  }
-
-  .lista-documentos button {
-    background: #dc2626;
-    border: none;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .btn-upload {
-    background: #163C25;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: inline-block;
-  }
-
-  .badge-new {
-    background: #163C25;
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    text-transform: uppercase;
-    margin-right: 4px;
-  }
-
-  .btn-soft-primary {
-    background: #1D4ED8;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .btn-soft-secondary {
-    background: #6B7280;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-  }
-</style>
+<link rel="stylesheet" href="{{ asset('assets/css/escola/editEscola.css') }}">
 @endpush
 
 @section('content')
 
-@if(session('success'))
-<div style="background: #d1fae5; padding: 10px 15px; border-radius: 6px; color: #065f46; margin-bottom: 15px;">
-  {{ session('success') }}
-</div>
-@endif
-
 <div class="escola-page">
   <div class="escola-card">
 
-    <h1 class="escola-title">EDITAR CADASTRO: {{ $escola->nome }}</h1>
+    <h1 class="escola-title">EDITAR ESCOLA</h1>
 
+    @if(session('success'))
+      <div class="alert-success-banner">
+        <span class="alert-icon">✅</span>
+        <span>{{ session('success') }}</span>
+      </div>
+    @endif
+
+    {{-- Forms de remoção de documento (fora do form principal) --}}
+    @foreach($escola->documentos as $doc)
+      <form id="form-remover-doc-{{ $doc->id }}"
+            action="{{ route('documentos.destroy', $doc->id) }}"
+            method="POST"
+            style="display:none;">
+        @csrf
+        @method('DELETE')
+      </form>
+    @endforeach
+
+    {{-- Formulário principal --}}
     <form action="{{ route('escolas.update', $escola->id) }}" method="POST" enctype="multipart/form-data">
-
       @csrf
       @method('PUT')
 
       <div class="row g-3">
 
         <div class="col-12 col-lg-7">
-          <label class="form-label">Nome da escola</label>
+          <label class="form-label">Nome da Escola</label>
           <input type="text" name="nome" value="{{ $escola->nome }}" class="form-control soft-input" required>
         </div>
 
@@ -167,79 +73,54 @@
 
       </div>
 
-      <!-- DOCUMENTOS JÁ ANEXADOS -->
-      <div class="mt-4">
+      {{-- Documentos existentes --}}
+      <div class="section-block mt-4">
+        <label class="form-label">Documentos Anexados</label>
 
-        <label class="form-label d-block">Documentos já anexados</label>
-
-        <div class="current-docs">
-
-          @forelse($escola->documentos as $doc)
-
-          <div class="doc-old-item">
-
-            <span>📄 {{ basename($doc->arquivo) }}</span>
-
-            <div class="d-flex gap-2">
-
-              <a href="{{ Storage::url($doc->arquivo) }}" target="_blank" class="btn btn-sm btn-light">
-                Ver
-              </a>
-
-              {{-- Botão chama JS, sem form aninhado --}}
-              <button type="button"
-                class="btn btn-sm btn-danger"
-                data-id="{{ $doc->id }}"
-                onclick="confirmarExclusao(this.dataset.id)">
-                Excluir
-              </button>
-
+        @forelse($escola->documentos as $doc)
+          <div class="doc-item">
+            <div class="doc-info">
+              <span style="font-size: 18px;">📄</span>
+              <span class="text-truncate" style="max-width: 220px;">{{ basename($doc->arquivo) }}</span>
             </div>
-
+            <div class="d-flex gap-2">
+              <a href="{{ Storage::url($doc->arquivo) }}" target="_blank" class="btn-soft-primary"
+                style="text-decoration: none; font-size: 12px; padding: 5px 14px;">
+                Visualizar
+              </a>
+              <button type="button"
+                class="btn-soft-danger btn-remover-doc"
+                style="font-size: 12px; padding: 5px 14px;"
+                data-id="{{ $doc->id }}"
+                data-nome="{{ basename($doc->arquivo) }}">
+                Remover
+              </button>
+            </div>
           </div>
-
-          @empty
-
-          <p class="text-muted m-0" style="font-size:13px;">
-            Nenhum documento cadastrado.
-          </p>
-
-          @endforelse
-
-        </div>
-
+        @empty
+          <p class="text-muted" style="font-style: italic; font-size: 13px;">Nenhum documento anexado.</p>
+        @endforelse
       </div>
 
-      <!-- NOVOS DOCUMENTOS -->
-      <div class="mt-4">
-
-        <label class="btn btn-upload mb-0">
-
-          + Adicionar novos documentos
-
-          <input type="file"
-            id="documentos"
-            name="documentos[]"
-            multiple
-            class="d-none"
-            accept=".pdf,image/*">
-
+      {{-- Upload novos documentos --}}
+      <div class="section-block mt-3">
+        <label class="form-label">
+          Adicionar novos documentos
+          <span class="text-muted" style="font-weight: 400;">(opcional)</span>
         </label>
+        <input type="file" id="input-documentos" name="documentos[]" class="form-control soft-input" accept=".pdf,image/*" multiple>
+        <small class="text-muted">PDF ou imagem. Segure Ctrl (ou Cmd no Mac) para selecionar múltiplos arquivos.</small>
 
-        <ul id="listaDocumentos" class="lista-documentos mt-3"></ul>
-
+        <div id="preview-documentos" class="preview-lista mt-2" style="display:none;">
+          <p class="preview-titulo">Arquivos selecionados:</p>
+          <ul id="lista-preview" class="preview-items"></ul>
+        </div>
       </div>
 
-      <div class="mt-5 d-flex justify-content-end gap-2">
-
-        <a href="{{ route('escolas.index') }}" class="btn btn-soft-secondary">
-          Cancelar
-        </a>
-
-        <button type="submit" class="btn btn-soft-primary">
-          Atualizar Cadastro
-        </button>
-
+      {{-- Botões --}}
+      <div class="mt-4 d-flex justify-content-end gap-2">
+        <a href="{{ route('escolas.show', $escola->id) }}" class="btn btn-soft-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-soft-primary">Salvar Alterações</button>
       </div>
 
     </form>
@@ -247,72 +128,66 @@
   </div>
 </div>
 
-{{-- Form de exclusão de documento FORA do form principal --}}
-<form id="form-excluir-doc" method="POST" style="display:none;">
-  @csrf
-  @method('DELETE')
-</form>
-
+@push('scripts')
 <script>
-  function confirmarExclusao(id) {
-    if (!confirm('Deseja realmente excluir este documento?')) return;
-
-    const form = document.getElementById('form-excluir-doc');
-    form.action = '/documentos/' + id;
-    form.submit();
-  }
-
-  document.addEventListener("DOMContentLoaded", function() {
-
-    let arquivosSelecionados = [];
-    const input = document.getElementById('documentos');
-
-    input.addEventListener('change', function() {
-
-      for (let i = 0; i < input.files.length; i++) {
-        arquivosSelecionados.push(input.files[i]);
+  // Remoção de documentos existentes
+  document.querySelectorAll('.btn-remover-doc').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id   = this.dataset.id;
+      var nome = this.dataset.nome;
+      if (confirm('Remover o documento "' + nome + '"?')) {
+        document.getElementById('form-remover-doc-' + id).submit();
       }
+    });
+  });
 
-      renderizarLista();
+  // Acumula arquivos sem sobrescrever seleções anteriores
+  const inputDocumentos = document.getElementById('input-documentos');
+  const dataTransfer = new DataTransfer();
 
+  inputDocumentos.addEventListener('change', function() {
+    Array.from(this.files).forEach(function(file) {
+      const jaExiste = Array.from(dataTransfer.files).some(f => f.name === file.name);
+      if (!jaExiste) dataTransfer.items.add(file);
     });
 
-    function renderizarLista() {
+    inputDocumentos.files = dataTransfer.files;
 
-      const lista = document.getElementById('listaDocumentos');
-      const dataTransfer = new DataTransfer();
+    const preview = document.getElementById('preview-documentos');
+    const lista   = document.getElementById('lista-preview');
+    lista.innerHTML = '';
 
-      lista.innerHTML = "";
-
-      arquivosSelecionados.forEach((arquivo, index) => {
-
-        dataTransfer.items.add(arquivo);
-
-        let item = document.createElement("li");
-
-        item.className = "d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded border";
-
-        item.innerHTML = `
-<span><span class="badge-new">Novo</span> ${arquivo.name}</span>
-<button type="button" class="btn btn-sm btn-danger py-0 px-2" onclick="removerArquivo(${index})">&times;</button>
-`;
-
-        lista.appendChild(item);
-
-      });
-
-      input.files = dataTransfer.files;
-
+    if (dataTransfer.files.length === 0) {
+      preview.style.display = 'none';
+      return;
     }
 
-    window.removerArquivo = function(index) {
-
-      arquivosSelecionados.splice(index, 1);
-      renderizarLista();
-
-    };
-
+    preview.style.display = 'block';
+    Array.from(dataTransfer.files).forEach(function(file) {
+      const li = document.createElement('li');
+      li.className = 'preview-item';
+      const tamanho = (file.size / 1024).toFixed(1);
+      li.innerHTML = `
+        <span>📄</span>
+        <span>${file.name}</span>
+        <span class="preview-tamanho">${tamanho} KB</span>
+        <button type="button" class="btn-remover-preview" onclick="removerPreview('${file.name}', this.closest('li'))">✕</button>
+      `;
+      lista.appendChild(li);
+    });
   });
+
+  function removerPreview(nome, li) {
+    Array.from(dataTransfer.items).forEach(function(item, index) {
+      if (item.getAsFile().name === nome) dataTransfer.items.remove(index);
+    });
+    inputDocumentos.files = dataTransfer.files;
+    li.remove();
+    if (dataTransfer.files.length === 0) {
+      document.getElementById('preview-documentos').style.display = 'none';
+    }
+  }
 </script>
+@endpush
 
 @endsection

@@ -1,20 +1,20 @@
 /* Página */
-.prof-page{
+.prof-page {
   padding: 24px;
 }
 
 /* Card principal */
-.prof-card{
+.prof-card {
   max-width: 980px;
   margin: 0 auto;
   background: #ffffff;
   border-radius: 16px;
   padding: 22px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.06);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
 }
 
 /* Título */
-.prof-title{
+.prof-title {
   text-align: center;
   font-weight: 800;
   font-size: 18px;
@@ -22,22 +22,22 @@
   margin: 4px 0 18px;
 }
 
-/* Inputs “cinza arredondado” */
-.soft-input{
-  background: #e9e9e9;
-  border: 1px solid #e2e2e2;
-  border-radius: 999px; /* bem arredondado (igual a imagem) */
+/* Inputs — padrão escola */
+.soft-input {
+  background: #e1e1e1;
+  border: 1px solid #d9d9d9;
+  border-radius: 999px;
   padding: 10px 14px;
 }
 
-.soft-input:focus{
-  background: #efefef;
+.soft-input:focus {
+  background: #ededed;
   border-color: #cfcfcf;
   box-shadow: none;
 }
 
-/* Botões */
-.btn-soft-primary{
+/* Botão principal */
+.btn-soft-primary {
   background: #163C25;
   border: 1px solid #163C25;
   color: #fff;
@@ -45,13 +45,14 @@
   padding: 10px 14px;
 }
 
-.btn-soft-primary:hover{
+.btn-soft-primary:hover {
   background: #0f2b1a;
   border-color: #0f2b1a;
   color: #fff;
 }
 
-.btn-soft-secondary{
+/* Botão secundário */
+.btn-soft-secondary {
   background: #f1f1f1;
   border: 1px solid #e3e3e3;
   color: #333;
@@ -59,13 +60,56 @@
   padding: 10px 14px;
 }
 
+/* Botão de upload — padrão escola */
+.btn-upload {
+  background: #2f5b77;
+  border: 1px solid #2f5b77;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: inline-block;
+}
 
+.btn-upload:hover {
+  background: #1c3044;
+  color: #fff;
+}
 
+/* Lista de documentos — padrão escola */
+.lista-documentos {
+  list-style: none;
+  padding-left: 0;
+}
 
+.lista-documentos li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f6fa;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  border: 1px solid #e1e1e1;
+}
 
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1.5;
+}
 
-/* Botão adicionar */
-.btn-add{
+.btn-danger:hover {
+  background-color: #bb2d3b;
+}
+
+/* Botão adicionar formação */
+.btn-add {
   background: none;
   border: none;
   color: #163C25;
@@ -73,14 +117,15 @@
   font-size: 13px;
   cursor: pointer;
   margin-top: 5px;
+  padding: 0;
 }
 
-.btn-add:hover{
+.btn-add:hover {
   text-decoration: underline;
 }
 
-/* Botão remover */
-.btn-remove{
+/* Botão remover formação */
+.btn-remove {
   background: #f8d7da;
   border: none;
   border-radius: 999px;
@@ -88,8 +133,9 @@
   height: 34px;
   font-size: 14px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
-.btn-remove:hover{
+.btn-remove:hover {
   background: #f1b0b7;
 }

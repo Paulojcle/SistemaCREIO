@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentoEscola extends Model
 {
     protected $fillable = [
-      'escola_id',
-      'arquivo',  
+      'escola_id', 
+      'nome_original',
+      'arquivo',
+      'tipo_mime',
     ];
 
     public function escola(){

@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('documento_escolas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('escola_id')->constrained()->onDelete('cascade');
+            $table->string('nome_original'); 
             $table->string('arquivo');
+            $table->string('tipo_mime')->nullable();
             $table->timestamps();
         });
     }

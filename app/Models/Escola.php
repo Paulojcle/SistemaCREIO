@@ -16,7 +16,8 @@ class Escola extends Model
         'cep',
     ];
 
-    public function documentos(){
+    public function documentos()
+    {
         return $this->hasMany(DocumentoEscola::class);
     }
 }

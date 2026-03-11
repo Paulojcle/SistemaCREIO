@@ -5,115 +5,154 @@
 @endpush
 
 @section('content')
-
 <div class="prof-page">
-  <div class="prof-card">
+    <div class="prof-card">
 
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <h1 class="prof-title m-0">INFORMAÇÕES DO PROFISSIONAL</h1>
-    </div>
-
-    <div class="row g-3">
-
-      <div class="col-12 col-md-8">
-        <label class="form-label">Nome completo</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ $profissional->nome }}" --}}
-      </div>
-
-      <div class="col-12 col-md-4">
-        <label class="form-label">Data de Nascimento</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ \Carbon\Carbon::parse($profissional->data_nascimento)->format('d/m/Y') }}" --}}
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label class="form-label">RG</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ $profissional->rg }}" --}}
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label class="form-label">CPF</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ $profissional->cpf }}" --}}
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label class="form-label">Celular</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ $profissional->celular }}" --}}
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label class="form-label">Número de registro</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ $profissional->numero_registro }}" --}}
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label class="form-label">Profissão</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ $profissional->profissao }}" --}}
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label class="form-label">Formação</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ $profissional->formacao }}" --}}
-      </div>
-
-      <div class="col-12 col-md-3">
-        <label class="form-label">Especialização</label>
-        <input type="text" class="form-control soft-input" value="" readonly>
-        {{-- value="{{ $profissional->especializacao }}" --}}
-      </div>
-
-      <div class="col-12 col-md-3 d-none d-md-block"></div>
-
-      {{-- Arquivo anexado --}}
-      <div class="col-12 col-md-6">
-        <label class="form-label">Arquivo anexado</label>
-
-        <div class="file-box">
-          <span class="file-pill">Nenhum arquivo</span>
-
-          {{-- Se existir arquivo:
-          <a class="file-pill" href="{{ asset('storage/' . $profissional->arquivo) }}" target="_blank">
-            Ver arquivo
-          </a>
-          --}}
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h1 class="prof-title mb-0">INFORMAÇÕES DO PROFISSIONAL</h1>
+            <span class="badge-status {{ $profissional->ativo ? 'badge-ativo' : 'badge-inativo' }}">
+                {{ $profissional->ativo ? 'Ativo' : 'Inativo' }}
+            </span>
         </div>
-      </div>
+
+        <div class="row g-4">
+
+            <div class="col-12 col-lg-8">
+                <div class="info-group">
+                    <p class="info-label">Nome Completo</p>
+                    <p class="info-value">{{ $profissional->nome }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="info-group">
+                    <p class="info-label">Data de Nascimento</p>
+                    <p class="info-value">{{ \Carbon\Carbon::parse($profissional->data_nascimento)->format('d/m/Y') }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="info-group">
+                    <p class="info-label">RG</p>
+                    <p class="info-value">{{ $profissional->rg ?? 'Não informado' }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="info-group">
+                    <p class="info-label">CPF</p>
+                    <p class="info-value">{{ $profissional->cpf ?? 'Não informado' }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="info-group">
+                    <p class="info-label">Celular</p>
+                    <p class="info-value">{{ $profissional->celular ?? 'Não informado' }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="info-group">
+                    <p class="info-label">Número de Registro</p>
+                    <p class="info-value">{{ $profissional->numero_registro ?? 'Não informado' }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="info-group">
+                    <p class="info-label">Profissão</p>
+                    <p class="info-value">{{ $profissional->profissao ?? 'Não informado' }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="info-group">
+                    <p class="info-label">Especialização</p>
+                    <p class="info-value">{{ $profissional->especializacao ?? 'Não informado' }}</p>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Formações --}}
+        <div class="section-docs mt-5">
+            <p class="info-label mb-3">Formações</p>
+
+            <div class="row">
+                @forelse($profissional->formacoes as $formacao)
+                    <div class="col-12 col-md-6">
+                        <div class="doc-item">
+                            <div class="doc-info">
+                                <span style="font-size: 20px;">🎓</span>
+                                <span>{{ $formacao->descricao }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted" style="font-style: italic;">Nenhuma formação cadastrada.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- Documentos --}}
+        <div class="section-docs mt-4">
+            <p class="info-label mb-3">Documentos Anexados</p>
+
+            <div class="row">
+                @forelse($profissional->documentos as $doc)
+                    <div class="col-12 col-md-6">
+                        <div class="doc-item">
+                            <div class="doc-info">
+                                <span style="font-size: 20px;">📄</span>
+                                <span class="text-truncate" style="max-width: 200px;">
+                                    {{ $doc->nome_original }}
+                                </span>
+                            </div>
+                            <a href="{{ Storage::url($doc->arquivo) }}" target="_blank" class="btn-soft-primary"
+                                style="text-decoration: none; font-size: 12px; padding: 6px 15px;">
+                                Visualizar
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted" style="font-style: italic;">Nenhum documento foi enviado.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <hr class="my-4" style="opacity: 0.1;">
+
+        <div class="d-flex justify-content-end gap-3">
+            <a href="{{ route('profissionais.index') }}" class="btn-soft-secondary text-decoration-none">
+                Voltar para Lista
+            </a>
+
+            <form action="{{ route('profissionais.toggle', $profissional->id) }}" method="POST" class="d-inline">
+                @csrf
+                @method('PATCH')
+                @if($profissional->ativo)
+                    <button type="submit" class="btn-soft-warning"
+                        onclick="return confirm('Deseja desligar {{ addslashes($profissional->nome) }}?')">
+                        Desligar Profissional
+                    </button>
+                @else
+                    <button type="submit" class="btn-soft-success"
+                        onclick="return confirm('Deseja reativar {{ addslashes($profissional->nome) }}?')">
+                        Reativar Profissional
+                    </button>
+                @endif
+            </form>
+
+            <a href="{{ route('profissionais.edit', $profissional->id) }}" class="btn-soft-primary text-decoration-none">
+                Editar Cadastro
+            </a>
+        </div>
 
     </div>
-
-    {{-- Botões no final --}}
-    <div class="mt-4 d-flex justify-content-end gap-2">
-      <a href="" class="btn btn-soft-secondary">Voltar</a>
-      {{-- href esperado:
-      href="{{ route('profissionais.index') }}"
-      --}}
-
-      <a href="" class="btn btn-soft-primary">Editar</a>
-      {{-- href esperado:
-      href="{{ route('profissionais.edit', $profissional->id) }}"
-      --}}
-
-      <form action="" method="POST" class="d-inline">
-        @csrf
-        @method('DELETE')
-        {{-- action esperado:
-        action="{{ route('profissionais.destroy', $profissional->id) }}"
-        --}}
-        <button type="submit" class="btn btn-soft-danger"
-          onclick="return confirm('Tem certeza que deseja excluir este profissional?')">
-          Excluir
-        </button>
-      </form>
-    </div>
-
-  </div>
 </div>
-
 @endsection

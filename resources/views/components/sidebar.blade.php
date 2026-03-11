@@ -62,8 +62,8 @@
         <details>
           <summary>🧑‍⚕️ Profissionais <span class="caret"></span></summary>
           <ul class="submenu">
-            <li><a href="{{ route('profissional.criar') }}">Cadastrar</a></li>
-            <li><a href="{{ route('profissional.visualizar') }}">Visualizar</a></li>
+            <li><a href="{{ route('profissionais.create') }}">Cadastrar</a></li>
+            <li><a href="{{ route('profissionais.index') }}">Visualizar</a></li>
           </ul>
         </details>
       </li>
@@ -73,7 +73,7 @@
         <details>
           <summary>🏫 Escolas <span class="caret"></span></summary>
           <ul class="submenu">
-            <li><a href="{{ route('escola.criar') }}">Cadastrar</a></li>
+            <li><a href="{{ route('escolas.create') }}">Cadastrar</a></li>
             <li><a href="{{ route('escolas.index') }}">Visualizar</a></li>
           </ul>
         </details>
