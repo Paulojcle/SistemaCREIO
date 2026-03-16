@@ -1,108 +1,379 @@
-.escola-page{
+/* ============================= */
+/* PÁGINA E CARD                 */
+/* ============================= */
+
+.escola-page {
   padding: 24px;
 }
 
-.escola-card{
+.escola-card {
   max-width: 980px;
   margin: 0 auto;
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
-  padding: 22px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.06);
+  padding: 32px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
 }
 
-.escola-title{
+/* ============================= */
+/* TÍTULO                        */
+/* ============================= */
+
+.escola-title {
+  text-align: center;
   font-weight: 800;
   font-size: 18px;
   letter-spacing: .4px;
-  text-align: center;
-  margin: 4px 0 18px;
+  margin: 0 0 28px;
 }
 
-.soft-input{
+/* ============================= */
+/* CABEÇALHO DE SEÇÃO            */
+/* ============================= */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e8ede9;
+}
+
+.section-header .section-icon {
+  width: 30px;
+  height: 30px;
+  background: #163C25;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-weight: 800;
+  font-size: 14px;
+  color: #163C25;
+  margin: 0;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+
+/* ============================= */
+/* INPUTS                        */
+/* ============================= */
+
+.soft-input {
   background: #e1e1e1;
   border: 1px solid #d9d9d9;
   border-radius: 999px;
-  padding: 10px 12px;
-}
-
-.soft-input:focus{
-  background: #ededed;
-  border-color: #cfcfcf;
-  box-shadow: none;
-}
-
-.btn-upload{
-  background: #2f5b77;
-  border: 1px solid #2f5b77;
-  color: #fff;
-  border-radius: 10px;
   padding: 10px 14px;
+  transition: background .15s, border-color .15s;
 }
 
-.btn-upload:hover{
-  filter: brightness(.95);
-  background: #1c3044;
-  color: white; 
+.soft-input:focus {
+  background: #ededed;
+  border-color: #aaa;
+  box-shadow: none;
+  outline: none;
 }
 
-.btn-soft-primary{
+select.soft-input {
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* ============================= */
+/* BOTÕES PRINCIPAIS             */
+/* ============================= */
+
+.btn-soft-primary {
   background: #163C25;
   border: 1px solid #163C25;
   color: #fff;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: background .15s;
 }
 
-.btn-soft-primary:hover{
+.btn-soft-primary:hover {
   background: #0f2b1a;
   border-color: #0f2b1a;
   color: #fff;
 }
 
-.btn-soft-secondary{
+.btn-soft-secondary {
   background: #f1f1f1;
   border: 1px solid #e3e3e3;
   color: #333;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 10px 20px;
+  transition: background .15s;
 }
 
-.lista-documentos{
-    list-style: none;
-    padding-left: 0;
+.btn-soft-secondary:hover {
+  background: #e5e5e5;
 }
 
-.lista-documentos li{
-    background: #f5f6fa;
-    padding: 6px 10px;
-    border-radius: 6px;
-    margin-bottom: 6px;
-    font-size: 14px;
+/* ============================= */
+/* DIVISOR ENTRE BLOCOS          */
+/* ============================= */
+
+.block-divider {
+  border: none;
+  border-top: 1px dashed #e0e0e0;
+  margin: 28px 0 0;
+}
+
+/* ============================= */
+/* ÁREA DE DOCUMENTOS            */
+/* ============================= */
+
+.documentos-area {
+  margin-top: 8px;
+}
+
+.documentos-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px dashed #c8d8cc;
+  border-radius: 14px;
+  padding: 32px 20px;
+  background: #f7faf8;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  text-align: center;
+}
+
+.documentos-dropzone:hover,
+.documentos-dropzone.dragover {
+  border-color: #163C25;
+  background: #edf4ef;
+}
+
+.documentos-dropzone svg {
+  width: 36px;
+  height: 36px;
+  color: #163C25;
+  opacity: .7;
+}
+
+.dropzone-titulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.dropzone-sub {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ============================= */
+/* LISTA DE DOCUMENTOS           */
+/* ============================= */
+
+.lista-documentos {
+  list-style: none;
+  padding: 0;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .lista-documentos li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f5f6fa;
-    padding: 8px 12px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    border: 1px solid #e1e1e1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f6fa;
+  border: 1px solid #e1e1e1;
+  border-radius: 10px;
+  padding: 10px 14px;
 }
 
-.btn-danger {
-    background-color: #dc3545;
-    border: none;
-    color: white;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1.5;
+.doc-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
-.btn-danger:hover {
-    background-color: #bb2d3b;
+.doc-icone {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.doc-nome {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.doc-tamanho {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.doc-remover {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #aaa;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  flex-shrink: 0;
+  transition: color .15s;
+}
+
+.doc-remover:hover {
+  color: #c0392b;
+}
+
+/* ============================= */
+/* DOCUMENTOS EXISTENTES (EDIT)  */
+/* ============================= */
+
+.doc-link {
+  display: inline-block;
+  font-size: 11px;
+  color: #163C25;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 2px;
+}
+
+.doc-link:hover {
+  text-decoration: underline;
+}
+
+.docs-vazios {
+  font-size: 13px;
+  color: #aaa;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+/* ============================= */
+/* ALERT DE SUCESSO              */
+/* ============================= */
+
+.alert-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+  border-left: 5px solid #163C25;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.alert-icon {
+  font-size: 18px;
+}
+
+/* ============================= */
+/* MODAL DE CONFIRMAÇÃO          */
+/* ============================= */
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 1200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-backdrop.open {
+  display: flex;
+}
+
+.confirm-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 28px 24px;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .18);
+  animation: modalIn .2s ease;
+}
+
+@keyframes modalIn {
+  from { transform: scale(.92); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.confirm-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.confirm-title {
+  font-weight: 800;
+  font-size: 16px;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.confirm-text {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.confirm-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.confirm-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.confirm-btn--cancel {
+  background: #f1f1f1;
+  color: #444;
+}
+
+.confirm-btn--cancel:hover {
+  background: #e5e5e5;
+}
+
+.confirm-btn--danger {
+  background: #c0392b;
+  color: #fff;
+}
+
+.confirm-btn--danger:hover {
+  background: #a93226;
 }

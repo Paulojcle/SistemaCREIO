@@ -29,16 +29,12 @@ Route::view('/alunoEditar', 'aluno.editALuno')->name('aluno.editar');
 Route::view('/alunoVisualizar', 'aluno.showAluno')->name('aluno.visualizar');
 
 //Rotas view profissional
-// ⚠️ Rota específica ANTES do resource para evitar conflito de parâmetros
-Route::delete('/profissionais/documentos/{id}', [DocumentosProfissionalController::class, 'destroy'])
-    ->name('profissionais.documentos.destroy');
+Route::delete('/profissionais/documentos/{id}', [DocumentosProfissionalController::class,'destroy'])->name('profissionais.documentos.destroy');
 
-Route::resource('profissionais', ProfissionalController::class)
-    ->parameters(['profissionais' => 'profissional'])
-    ->except(['destroy']);
+Route::resource('profissionais', ProfissionalController::class)->parameters(['profissionais' => 'profissional'])->except(['destroy']);
 
-Route::patch('profissionais/{profissional}/toggle', [ProfissionalController::class, 'toggle'])
-    ->name('profissionais.toggle');
+Route::patch('profissionais/{profissional}/toggle', [ProfissionalController::class, 'toggle'])->name('profissionais.toggle');
+
 
 //Rotas de atendimento
 Route::view('/agendamento', 'atendimento.index')->name('agendamento');

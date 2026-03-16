@@ -87,6 +87,7 @@
             <li><a href="{{ route('agendamento') }}">Agendamentos</a></li>
             <li><a href="{{ route('atendimento.lancar') }}">Lançar atendimento</a></li>
             <li><a href="#">Lista de espera</a></li>
+            <li><a href="#">Horários de atendimento</a></li>
           </ul>
         </details>
       </li>

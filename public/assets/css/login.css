@@ -3,7 +3,6 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-
     margin: 0;
     padding: 0;
     height: 100vh;
@@ -17,7 +16,7 @@ body {
 .login-card {
     background: white;
     width: 50%;
-    max-width: 95%;
+    max-width: 50%;
     border-radius: 12px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     padding: 40px;
