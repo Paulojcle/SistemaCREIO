@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ListaEspera;
 
 class Profissional extends Model
 {
@@ -34,5 +35,9 @@ class Profissional extends Model
   public function documentos()
   {
     return $this->hasMany(DocumentosProfissionais::class);
+  }
+
+  public function listasEspera(){
+    return $this->belongsToMany(ListaEspera::class, 'lista_espera_profissional');
   }
 }

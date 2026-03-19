@@ -1,11 +1,17 @@
 <?php
 
+use App\Http\Controllers\DeficienciaController;
+use App\Http\Controllers\DiagnosticoController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EscolaController;
 use App\Http\Controllers\DocumentosEscolaController;
 use App\Http\Controllers\ProfissionalController;
 use App\Http\Controllers\DocumentosProfissionalController;
+use App\Http\Controllers\ListaEsperaController;
+use App\Http\Controllers\OrigemEncaminhamentoController;
+use App\Http\Controllers\AlunoController;
+use App\Http\Controllers\DocumentoAlunoController;
 
 /*Rotas para definir a página inicial como o índex do sistema e para deixar o diretório de partida sendo o login*/
 Route::get('/', fn () => redirect()->route('login.form'));
@@ -22,11 +28,10 @@ Route::resource('escolas', EscolaController::class);
 Route::delete('/documentos/{id}', [DocumentosEscolaController::class, 'destroy'])
     ->name('documentos.destroy');
 
-//Rotas view aluno
-Route::view('/alunoCriar', 'aluno.createAluno')->name('aluno.criar');
-Route::view('/alunoDeletar', 'aluno.deleteAluno')->Name('aluno.deletar');
-Route::view('/alunoEditar', 'aluno.editALuno')->name('aluno.editar');
-Route::view('/alunoVisualizar', 'aluno.showAluno')->name('aluno.visualizar');
+//Rotas aluno
+Route::resource('alunos', AlunoController::class)->except(['destroy']);
+Route::patch('alunos/{aluno}/toggle', [AlunoController::class, 'toggle'])->name('alunos.toggle');
+Route::delete('/alunos/documentos/{id}', [DocumentoAlunoController::class, 'destroy'])->name('alunos.documentos.destroy');
 
 //Rotas view profissional
 Route::delete('/profissionais/documentos/{id}', [DocumentosProfissionalController::class,'destroy'])->name('profissionais.documentos.destroy');
@@ -39,3 +44,15 @@ Route::patch('profissionais/{profissional}/toggle', [ProfissionalController::cla
 //Rotas de atendimento
 Route::view('/agendamento', 'atendimento.index')->name('agendamento');
 Route::view('/atendimentoLancar', 'atendimento.postAtendimento')->name('atendimento.lancar');
+
+// Testes para novas funcionalidades
+Route::resource('diagnosticos', DiagnosticoController::class)->only(['index', 'store', 'update', 'destroy']);
+
+Route::resource('deficiencias', DeficienciaController::class)->only(['index', 'store', 'update', 'destroy']);
+
+Route::resource('origensEncaminhamento', OrigemEncaminhamentoController::class)->only(['index', 'store', 'update', 'destroy']);
+
+
+//Lista de espera
+Route::resource('listasEspera', ListaEsperaController::class)->parameters(['listasEspera' => 'lista'])->only(['index', 'store', 'update']);
+Route::patch('listasEspera/{lista}/toggle', [ListaEsperaController::class, 'toggle'])->name('listasEspera.toggle');

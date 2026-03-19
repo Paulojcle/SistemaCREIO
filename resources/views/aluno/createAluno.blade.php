@@ -11,7 +11,18 @@
 
     <h1 class="aluno-title">CADASTRO DE NOVO ALUNO</h1>
 
-    <form action="" method="POST" enctype="multipart/form-data">
+    @if($errors->any())
+      <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:14px 18px; margin-bottom:20px;">
+        <strong style="color:#b91c1c;">Atenção! Corrija os campos abaixo antes de salvar:</strong>
+        <ul style="margin:8px 0 0 18px; color:#b91c1c; font-size:0.9rem;">
+          @foreach($errors->all() as $erro)
+            <li>{{ $erro }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+
+    <form action="{{ route('alunos.store') }}" method="POST" enctype="multipart/form-data">
       @csrf
 
       <div class="foto-row">
@@ -72,7 +83,7 @@
           </button>
         </div>
 
-        {{-- Modal confirmação exclusão --}}
+        {{-- Modal confirmação exclusão foto --}}
         <div class="confirm-backdrop" id="confirmBackdrop">
           <div class="confirm-modal">
             <div class="confirm-icon">🗑️</div>
@@ -96,30 +107,35 @@
         <div class="foto-fields">
           <div class="row g-3">
             <div class="col-12 col-md-8">
-              <label class="form-label">Nome completo</label>
-              <input type="text" name="nome" class="form-control soft-input">
+              <label class="form-label">Nome completo <span style="color:#e11d48;">*</span></label>
+              <input type="text" name="nome" value="{{ old('nome') }}"
+                class="form-control soft-input @error('nome') is-invalid @enderror" required>
+              @error('nome') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
             <div class="col-12 col-md-4">
-              <label class="form-label">Data de Nascimento</label>
-              <input type="date" name="data_nascimento" class="form-control soft-input">
+              <label class="form-label">Data de Nascimento <span style="color:#e11d48;">*</span></label>
+              <input type="date" name="data_nascimento" value="{{ old('data_nascimento') }}"
+                class="form-control soft-input @error('data_nascimento') is-invalid @enderror" required>
+              @error('data_nascimento') <div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
 
             <div class="col-12 col-md-4">
-              <label class="form-label">Sexo</label>
-              <div class="soft-radio">
+              <label class="form-label">Sexo <span style="color:#e11d48;">*</span></label>
+              <div class="soft-radio @error('sexo') is-invalid @enderror">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="sexo" id="sexo_m" value="M">
+                  <input class="form-check-input" type="radio" name="sexo" id="sexo_m" value="M"
+                  {{ old('sexo') === 'M' ? 'checked' : '' }}>
                   <label class="form-check-label" for="sexo_m">Masculino</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="sexo" id="sexo_f" value="F">
+                  <input class="form-check-input" type="radio" name="sexo" id="sexo_f" value="F"
+                  {{ old('sexo') === 'F' ? 'checked' : '' }}>
                   <label class="form-check-label" for="sexo_f">Feminino</label>
                 </div>
               </div>
+              @error('sexo') <div style="color:#dc3545; font-size:0.875rem; margin-top:4px;">{{ $message }}</div> @enderror
             </div>
-
-            {{-- ✅ REMOVIDO: "Veio por ordem judicial?" (agora está em Origem do Encaminhamento) --}}
 
             <div class="col-12 col-md-4">
               <label class="form-label">Celular</label>
@@ -171,7 +187,12 @@
 
         <div class="col-12 col-md-4">
           <label class="form-label">Escola</label>
-          <input type="text" name="escola" class="form-control soft-input">
+          <select name="escola_id" class="form-select soft-input">
+            <option value="">Selecione</option>
+            @foreach($escolas as $escola)
+              <option value="{{ $escola->id }}">{{ $escola->nome }}</option>
+            @endforeach
+          </select>
         </div>
 
         <div class="col-6 col-md-4">
@@ -213,12 +234,12 @@
           <label class="form-label">Alérgico a algum medicamento?</label>
           <div class="soft-radio">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="alergico_medicamento" id="am_sim" value="Sim"
+              <input class="form-check-input" type="radio" name="alergico_medicamento" id="am_sim" value="1"
                 onchange="toggleQual('am_qual')">
               <label class="form-check-label" for="am_sim">Sim</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="alergico_medicamento" id="am_nao" value="Não"
+              <input class="form-check-input" type="radio" name="alergico_medicamento" id="am_nao" value="0"
                 onchange="toggleQual('am_qual')">
               <label class="form-check-label" for="am_nao">Não</label>
             </div>
@@ -233,12 +254,12 @@
           <label class="form-label">Alérgico a algum alimento?</label>
           <div class="soft-radio">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="alergico_alimento" id="aa_sim" value="Sim"
+              <input class="form-check-input" type="radio" name="alergico_alimento" id="aa_sim" value="1"
                 onchange="toggleQual('aa_qual')">
               <label class="form-check-label" for="aa_sim">Sim</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="alergico_alimento" id="aa_nao" value="Não"
+              <input class="form-check-input" type="radio" name="alergico_alimento" id="aa_nao" value="0"
                 onchange="toggleQual('aa_qual')">
               <label class="form-check-label" for="aa_nao">Não</label>
             </div>
@@ -253,12 +274,12 @@
           <label class="form-label">Faz uso de medicação específica?</label>
           <div class="soft-radio">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="usa_medicacao" id="um_sim" value="Sim"
+              <input class="form-check-input" type="radio" name="usa_medicacao" id="um_sim" value="1"
                 onchange="toggleQual('um_qual')">
               <label class="form-check-label" for="um_sim">Sim</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="usa_medicacao" id="um_nao" value="Não"
+              <input class="form-check-input" type="radio" name="usa_medicacao" id="um_nao" value="0"
                 onchange="toggleQual('um_qual')">
               <label class="form-check-label" for="um_nao">Não</label>
             </div>
@@ -309,20 +330,16 @@
         </div>
 
         <div class="col-12">
-          <label class="form-label">Quais profissionais o aluno necessita?</label>
+          <label class="form-label">Filas de espera que o aluno será inserido</label>
           <div class="chips">
-            @php
-              $profissionais = [
-                'Psicólogo', 'Fonoaudiólogo', 'Neurologista', 'Pediatra',
-                'Terapeuta Ocupacional', 'Fisioterapeuta', 'Psicopedagogo', 'Outro'
-              ];
-            @endphp
-            @foreach($profissionais as $p)
+            @forelse($listaEspera as $lista)
               <label class="chip">
-                <input type="checkbox" name="necessita_profissionais[]" value="{{ $p }}">
-                <span>{{ $p }}</span>
+                <input type="checkbox" name="listasEspera[]" value="{{ $lista->id }}">
+                <span>{{ $lista->nome }}</span>
               </label>
-            @endforeach
+            @empty
+              <p style="color:#94a3b8; font-size:0.85rem;">Nenhuma lista de espera ativa cadastrada.</p>
+            @endforelse
           </div>
         </div>
       </div>
@@ -338,38 +355,25 @@
           <div class="col-12">
             <label class="form-label">Tipo de Deficiência</label>
             <div class="chips metric-chips">
-              @php
-                $deficiencias = [
-                  'Deficiência Intelectual', 'Deficiência Física',
-                  'Deficiência Auditiva', 'Deficiência Visual', 'Deficiência Múltipla'
-                ];
-              @endphp
-              @foreach($deficiencias as $d)
+              @foreach($deficiencias as $deficiencia)
                 <label class="chip metric-chip">
-                  <input type="checkbox" name="deficiencias[]" value="{{ $d }}">
-                  <span>{{ $d }}</span>
+                  <input type="checkbox" name="deficiencias[]" value="{{ $deficiencia->id }}">
+                  <span>{{ $deficiencia->nome }}</span>
                 </label>
               @endforeach
             </div>
-            <input type="text" name="outra_deficiencia" class="form-control soft-input mt-3"
-              placeholder="Outra deficiência não listada acima">
           </div>
 
           <div class="col-12">
             <label class="form-label">Diagnósticos Clínicos</label>
             <div class="chips metric-chips">
-              @php
-                $diagnosticos = ['TEA', 'TDAH', 'TOD', 'Dislexia', 'Síndrome de Down', 'Paralisia Cerebral'];
-              @endphp
-              @foreach($diagnosticos as $diag)
+              @foreach($diagnosticos as $diagnostico)
                 <label class="chip metric-chip">
-                  <input type="checkbox" name="diagnosticos[]" value="{{ $diag }}">
-                  <span>{{ $diag }}</span>
+                  <input type="checkbox" name="diagnosticos[]" value="{{ $diagnostico->id }}">
+                  <span>{{ $diagnostico->nome }}</span>
                 </label>
               @endforeach
             </div>
-            <input type="text" name="outro_diagnostico" class="form-control soft-input mt-3"
-              placeholder="Outro diagnóstico não listado acima">
           </div>
 
           <div class="col-12 col-md-4">
@@ -386,31 +390,22 @@
             <label class="form-label">Possui Laudo Médico?</label>
             <select name="possui_laudo" class="form-select soft-input">
               <option value="">Selecione</option>
-              <option value="Sim">Sim</option>
-              <option value="Não">Não</option>
+              <option value="1">Sim</option>
+              <option value="0">Não</option>
             </select>
           </div>
 
-
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-4">
             <label class="form-label">Origem do Encaminhamento</label>
-            <select name="origem_encaminhamento" id="origemEncaminhamento" class="form-select soft-input">
+            <select name="origem_encaminhamento_id" class="form-select soft-input">
               <option value="">Selecione</option>
-              <option value="Escola">Escola</option>
-              <option value="Conselho Tutelar">Conselho Tutelar</option>
-              <option value="Ordem Judicial">Ordem Judicial</option>
-              <option value="Procura Espontânea">Procura Espontânea</option>
-              <option value="Outro">Outro</option>
+              @foreach($origens as $origem)
+                <option value="{{ $origem->id }}">{{ $origem->nome }}</option>
+              @endforeach
             </select>
-            <input type="text"
-              name="origem_encaminhamento_outro"
-              id="origemOutroField"
-              class="form-control soft-input mt-2"
-              placeholder="Especifique a origem..."
-              style="display:none;">
           </div>
 
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-4">
             <label class="form-label">Data do Diagnóstico</label>
             <input type="date" name="data_diagnostico" class="form-control soft-input">
           </div>
@@ -418,7 +413,7 @@
         </div>{{-- fim .row métricas --}}
       </div>{{-- fim .metric-section --}}
 
-      {{-- ✅ Anexar documentos --}}
+      {{-- Anexar documentos --}}
       <hr class="block-divider">
       <div class="section-header">
         <div class="section-icon">📎</div>
@@ -441,7 +436,7 @@
 
       {{-- Botões --}}
       <div class="mt-4 d-flex justify-content-end gap-2">
-        <a href="" class="btn btn-soft-secondary">Cancelar</a>
+        <a href="{{ route('alunos.index') }}" class="btn btn-soft-secondary">Cancelar</a>
         <button type="submit" class="btn btn-soft-primary">Salvar</button>
       </div>
 
@@ -454,7 +449,7 @@
   function toggleQual(divId) {
     var radio = document.querySelector('input[onchange*="' + divId + '"]:checked');
     document.getElementById(divId).style.display =
-      (radio && radio.value === 'Sim') ? 'block' : 'none';
+      (radio && radio.value === '1') ? 'block' : 'none';
   }
 
   // ── Foto ──────────────────────────────────────────────────────
@@ -556,30 +551,15 @@
     document.getElementById('confirmBackdrop').classList.remove('open');
   });
 
-  // ── Origem do encaminhamento ──────────────────────────────────
-  document.getElementById('origemEncaminhamento').addEventListener('change', function () {
-    var campo = document.getElementById('origemOutroField');
-    if (this.value === 'Outro') {
-      campo.style.display = 'block';
-      campo.required = true;
-    } else {
-      campo.style.display = 'none';
-      campo.required = false;
-      campo.value = '';
-    }
-  });
-
   // ── Documentos (drag & drop + clique) ────────────────────────
   var arquivosSelecionados = [];
   var inputDocumentos      = document.getElementById('documentos');
   var dropzone             = document.getElementById('dropzone');
 
-  // Clique normal
   inputDocumentos.addEventListener('change', function () {
     adicionarArquivos(this.files);
   });
 
-  // Drag over: destaca a área
   dropzone.addEventListener('dragover', function (e) {
     e.preventDefault();
     dropzone.classList.add('dragover');
@@ -589,7 +569,6 @@
     dropzone.classList.remove('dragover');
   });
 
-  // Drop: adiciona os arquivos arrastados
   dropzone.addEventListener('drop', function (e) {
     e.preventDefault();
     dropzone.classList.remove('dragover');

@@ -51,8 +51,8 @@
         <details>
           <summary>👩‍🎓 Alunos <span class="caret"></span></summary>
           <ul class="submenu">
-            <li><a href="{{ route('aluno.criar') }}">Cadastrar</a></li>
-            <li><a href="{{ route('aluno.visualizar') }}">Visualizar</a></li>
+            <li><a href="{{ route('alunos.create') }}">Cadastrar</a></li>
+            <li><a href="{{ route('alunos.index') }}">Visualizar</a></li>
           </ul>
         </details>
       </li>
@@ -110,6 +110,10 @@
         <details>
           <summary>⚙️ Administração <span class="caret"></span></summary>
           <ul class="submenu">
+            <li><a href="{{ route('diagnosticos.index') }}">Tipos de Diagnóstico</a></li>
+            <li><a href="{{ route('deficiencias.index') }}">Tipos de Deficiência</a></li>
+            <li><a href="{{ route('origensEncaminhamento.index') }}">Origens de Encaminhamento</a></li>
+            <li><a href="{{ route('listasEspera.index') }}">Cadastrar listas de Espera</a></li>
             <li><a href="#">Usuários</a></li>
             <li><a href="#">Perfis e Permissões</a></li>
           </ul>

@@ -1,476 +1,718 @@
 @extends('layouts.app')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('assets/css/aluno/showAluno.css') }}">
-{{-- Se quiser separar:
-<link rel="stylesheet" href="{{ asset('assets/css/aluno/editAluno.css') }}">
---}}
+<link rel="stylesheet" href="{{ asset('assets/css/aluno/createAluno.css') }}">
 @endpush
 
 @section('content')
+
 <div class="aluno-page">
   <div class="aluno-card">
 
-    {{-- Cabeçalho --}}
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <h1 class="aluno-title m-0">EDITAR ALUNO</h1>
+    <h1 class="aluno-title">EDITAR ALUNO</h1>
 
-      {{-- (Opcional) botão voltar --}}
-      <a href="" class="icon-btn" title="Voltar">
-        <i class="bi bi-arrow-left"></i>
-      </a>
-      {{-- href esperado:
-      href="{{ route('alunos.show', $aluno->id) }}"
-      --}}
-    </div>
+    @if($errors->any())
+      <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:14px 18px; margin-bottom:20px;">
+        <strong style="color:#b91c1c;">Atenção! Corrija os campos abaixo antes de salvar:</strong>
+        <ul style="margin:8px 0 0 18px; color:#b91c1c; font-size:0.9rem;">
+          @foreach($errors->all() as $erro)
+            <li>{{ $erro }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
 
-    {{-- FORM PRINCIPAL DE EDIÇÃO --}}
-    <form action="" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('alunos.update', $aluno->id) }}" method="POST" enctype="multipart/form-data">
       @csrf
       @method('PUT')
 
-      {{-- action esperado:
-      action="{{ route('alunos.update', $aluno->id) }}"
-      --}}
+      <input type="hidden" name="foto_remover" id="fotoRemover" value="0">
 
-      {{-- Topo: Foto + Status/Motivo + Upload --}}
-      <div class="row g-3 align-items-start mb-4">
+      <div class="foto-row">
 
-        {{-- FOTO + upload --}}
-        <div class="col-12 col-lg-3">
-          <div class="photo-card">
+        <div class="foto-col">
+          <div class="upload-avatar-circle" id="avatarCircle">
 
-            <label class="photo-34" for="foto" style="cursor:pointer;">
-              {{-- Se já existir foto:
-              <img id="previewFoto" src="{{ asset('storage/' . $aluno->foto) }}" alt="Foto do aluno">
-              --}}
+            <div class="upload-avatar-icon" id="avatarIcon" {{ $aluno->foto ? 'style=display:none;' : '' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+              </svg>
+              <span>Foto do aluno</span>
+            </div>
 
-              <img id="previewFoto" src="" alt="Foto do aluno">
-              {{-- src esperado:
-              src="{{ asset('storage/' . $aluno->foto) }}"
-              --}}
-            </label>
+            <img id="previewFoto"
+              src="{{ $aluno->foto ? asset('storage/' . $aluno->foto) : '' }}"
+              alt="Foto do aluno"
+              style="{{ $aluno->foto ? '' : 'display:none;' }}">
 
-            <input id="foto" name="foto" type="file" accept="image/*" class="d-none">
+            <div class="avatar-overlay" id="avatarOverlay" style="{{ $aluno->foto ? 'display:flex;' : 'display:none;' }}">
+              <span class="avatar-overlay-hint">Clique para opções</span>
+            </div>
 
-            <small class="text-muted d-block text-center mt-2">
-              Clique na foto para alterar
-            </small>
+          </div>
+
+          <div class="upload-avatar-badge" id="avatarBadge" style="{{ $aluno->foto ? 'display:none;' : '' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </div>
+
+          <span class="foto-label" id="fotoLabel">{{ $aluno->foto ? 'Clique na foto para opções' : 'Clique para adicionar' }}</span>
+          <input id="foto" name="foto" type="file" accept="image/*" class="d-none">
+        </div>
+
+        {{-- Menu de ações da foto --}}
+        <div class="foto-action-menu" id="fotoActionMenu">
+          <button type="button" class="foto-action-btn" id="btnVerFoto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Ver foto
+          </button>
+          <button type="button" class="foto-action-btn" id="btnTrocarFoto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            Trocar foto
+          </button>
+          <button type="button" class="foto-action-btn foto-action-btn--danger" id="btnExcluirFoto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+            Excluir foto
+          </button>
+        </div>
+
+        {{-- Modal confirmação exclusão foto --}}
+        <div class="confirm-backdrop" id="confirmBackdrop">
+          <div class="confirm-modal">
+            <div class="confirm-icon">🗑️</div>
+            <h3 class="confirm-title">Excluir foto?</h3>
+            <p class="confirm-text">Essa ação não pode ser desfeita.<br>Deseja continuar?</p>
+            <div class="confirm-btns">
+              <button type="button" class="confirm-btn confirm-btn--cancel" id="btnCancelExcluir">Cancelar</button>
+              <button type="button" class="confirm-btn confirm-btn--danger" id="btnConfirmExcluir">Sim, excluir</button>
+            </div>
           </div>
         </div>
 
-        <div class="col-12 col-lg-9">
-          <div class="top-card">
-            <div class="row g-3">
+        {{-- Lightbox --}}
+        <div class="lightbox-backdrop" id="lightboxBackdrop">
+          <div class="lightbox-inner">
+            <button type="button" class="lightbox-close" id="lightboxClose">&times;</button>
+            <img id="lightboxImg"
+              src="{{ $aluno->foto ? asset('storage/' . $aluno->foto) : '' }}"
+              alt="Foto do aluno">
+          </div>
+        </div>
 
-              {{-- STATUS (agora habilitado) --}}
-              <div class="col-12 col-lg-5">
-                <label class="form-label">Status</label>
-                <div class="soft-radio">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="status" value="Ativo"
-                      {{-- {{ $aluno->status === 'Ativo' ? 'checked' : '' }} --}}
-                    >
-                    <label class="form-check-label">Ativo</label>
-                  </div>
+        <div class="foto-fields">
+          <div class="row g-3">
+            <div class="col-12 col-md-8">
+              <label class="form-label">Nome completo <span style="color:#e11d48;">*</span></label>
+              <input type="text" name="nome" value="{{ old('nome', $aluno->nome) }}"
+                class="form-control soft-input @error('nome') is-invalid @enderror" required>
+              @error('nome') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
 
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="status" value="Desistente"
-                      {{-- {{ $aluno->status === 'Desistente' ? 'checked' : '' }} --}}
-                    >
-                    <label class="form-check-label">Desistente</label>
-                  </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label">Data de Nascimento <span style="color:#e11d48;">*</span></label>
+              <input type="date" name="data_nascimento" value="{{ old('data_nascimento', $aluno->data_nascimento) }}"
+                class="form-control soft-input @error('data_nascimento') is-invalid @enderror" required>
+              @error('data_nascimento') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
 
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="status" value="Desligado"
-                      {{-- {{ $aluno->status === 'Desligado' ? 'checked' : '' }} --}}
-                    >
-                    <label class="form-check-label">Desligado</label>
-                  </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label">Sexo <span style="color:#e11d48;">*</span></label>
+              <div class="soft-radio @error('sexo') is-invalid @enderror">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="sexo" id="sexo_m" value="M"
+                  {{ old('sexo', $aluno->sexo) === 'M' ? 'checked' : '' }}>
+                  <label class="form-check-label" for="sexo_m">Masculino</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="sexo" id="sexo_f" value="F"
+                  {{ old('sexo', $aluno->sexo) === 'F' ? 'checked' : '' }}>
+                  <label class="form-check-label" for="sexo_f">Feminino</label>
                 </div>
               </div>
-
-              {{-- MOTIVO (agora editável) --}}
-              <div class="col-12 col-lg-7">
-                <label class="form-label">Motivo</label>
-                <textarea name="motivo" class="form-control soft-input soft-textarea" rows="3">{{-- {{ $aluno->motivo }} --}}</textarea>
-              </div>
-
+              @error('sexo') <div style="color:#dc3545; font-size:0.875rem; margin-top:4px;">{{ $message }}</div> @enderror
             </div>
 
-            {{-- Upload de documentos (opcional) - agora dentro do mesmo form --}}
-            <div class="mt-3 d-flex justify-content-end align-items-center gap-2">
-              <label class="btn btn-upload mb-0">
-                Envie um arquivo
-                <input type="file" name="documentos[]" class="d-none" multiple>
-              </label>
-
-              {{-- Esse botão salva tudo (dados + anexos) --}}
-              <button class="btn btn-soft-primary" type="submit">
-                Salvar alterações
-              </button>
+            <div class="col-12 col-md-4">
+              <label class="form-label">Celular</label>
+              <input type="text" name="celular" value="{{ old('celular', $aluno->celular) }}" class="form-control soft-input">
             </div>
 
           </div>
         </div>
 
-      </div>
+      </div>{{-- fim .foto-row --}}
 
       {{-- Dados do aluno --}}
-      <h2 class="section-title">Dados do aluno</h2>
+      <hr class="block-divider">
+      <div class="section-header">
+        <div class="section-icon">👤</div>
+        <h2 class="section-title">Dados do aluno</h2>
+      </div>
 
       <div class="row g-3">
-
-        <div class="col-12 col-lg-8">
-          <label class="form-label">Nome completo</label>
-          <input name="nome" class="form-control soft-input" value="{{-- {{ $aluno->nome }} --}}">
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-2">
-          <label class="form-label">Data de Nascimento</label>
-          <input type="date" name="data_nascimento" class="form-control soft-input" value="">
-          {{-- value esperado:
-          value="{{ $aluno->data_nascimento }}"
-          --}}
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-2">
-          <label class="form-label">Idade</label>
-          <input class="form-control soft-input" value="{{-- {{ $aluno->idade }} --}}" readonly>
-          {{-- Idade pode ser calculada, por isso deixei readonly --}}
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-4">
-          <label class="form-label">Sexo</label>
-          <div class="soft-radio">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="sexo" value="M"
-                {{-- {{ $aluno->sexo === 'M' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Masculino</label>
-            </div>
-
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="sexo" value="F"
-                {{-- {{ $aluno->sexo === 'F' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Feminino</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-md-5">
           <label class="form-label">Endereço</label>
-          <input name="endereco" class="form-control soft-input" value="{{-- {{ $aluno->endereco }} --}}">
+          <input type="text" name="endereco" value="{{ old('endereco', $aluno->endereco) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-md-4 col-lg-2">
+        <div class="col-6 col-md-2">
           <label class="form-label">Número</label>
-          <input name="numero" class="form-control soft-input" value="{{-- {{ $aluno->numero }} --}}">
+          <input type="text" name="numero" value="{{ old('numero', $aluno->numero) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-md-4 col-lg-3">
+        <div class="col-6 col-md-3">
           <label class="form-label">Bairro</label>
-          <input name="bairro" class="form-control soft-input" value="{{-- {{ $aluno->bairro }} --}}">
+          <input type="text" name="bairro" value="{{ old('bairro', $aluno->bairro) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-md-4 col-lg-3">
+        <div class="col-6 col-md-2">
           <label class="form-label">CEP</label>
-          <input name="cep" class="form-control soft-input" value="{{-- {{ $aluno->cep }} --}}">
+          <input type="text" name="cep" value="{{ old('cep', $aluno->cep) }}" class="form-control soft-input" inputmode="numeric">
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col-6 col-md-4">
           <label class="form-label">Cidade</label>
-          <input name="cidade" class="form-control soft-input" value="{{-- {{ $aluno->cidade }} --}}">
+          <input type="text" name="cidade" value="{{ old('cidade', $aluno->cidade) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3">
-          <label class="form-label">Celular</label>
-          <input name="celular" class="form-control soft-input" value="{{-- {{ $aluno->celular }} --}}">
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-3">
+        <div class="col-12 col-md-4">
           <label class="form-label">Tel. Residencial</label>
-          <input name="tel_residencial" class="form-control soft-input" value="{{-- {{ $aluno->tel_residencial }} --}}">
+          <input type="text" name="tel_residencial" value="{{ old('tel_residencial', $aluno->tel_residencial) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-md-8 col-lg-9">
+        <div class="col-12 col-md-4">
           <label class="form-label">Escola</label>
-          <input name="escola" class="form-control soft-input" value="{{-- {{ $aluno->escola }} --}}">
+          <select name="escola_id" class="form-select soft-input">
+            <option value="">Selecione</option>
+            @foreach($escolas as $escola)
+              <option value="{{ $escola->id }}" {{ old('escola_id', $aluno->escola_id) == $escola->id ? 'selected' : '' }}>
+                {{ $escola->nome }}
+              </option>
+            @endforeach
+          </select>
         </div>
 
-        <div class="col-12 col-md-4 col-lg-2">
+        <div class="col-6 col-md-4">
           <label class="form-label">Série</label>
-          <input name="serie" class="form-control soft-input" value="{{-- {{ $aluno->serie }} --}}">
+          <input type="text" name="serie" value="{{ old('serie', $aluno->serie) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-md-4 col-lg-3">
+        <div class="col-6 col-md-4">
           <label class="form-label">Turno</label>
-          <input name="turno" class="form-control soft-input" value="{{-- {{ $aluno->turno }} --}}">
+          <select name="turno" class="form-select soft-input">
+            <option value="">Selecione</option>
+            @foreach(['Matutino', 'Vespertino', 'Noturno', 'Integral'] as $turno)
+              <option value="{{ $turno }}" {{ old('turno', $aluno->turno) === $turno ? 'selected' : '' }}>{{ $turno }}</option>
+            @endforeach
+          </select>
         </div>
 
-        <div class="col-12 col-md-4 col-lg-7">
+        <div class="col-12 col-md-4">
           <label class="form-label">Filiação 1</label>
-          <input name="filiacao1" class="form-control soft-input" value="{{-- {{ $aluno->filiacao1 }} --}}">
+          <input type="text" name="filiacao1" value="{{ old('filiacao1', $aluno->filiacao1) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-md-4">
           <label class="form-label">Filiação 2</label>
-          <input name="filiacao2" class="form-control soft-input" value="{{-- {{ $aluno->filiacao2 }} --}}">
+          <input type="text" name="filiacao2" value="{{ old('filiacao2', $aluno->filiacao2) }}" class="form-control soft-input">
         </div>
+      </div>
 
-        {{-- Alergias / Medicação --}}
+      {{-- Saúde --}}
+      <hr class="block-divider">
+      <div class="section-header">
+        <div class="section-icon">💊</div>
+        <h2 class="section-title">Saúde</h2>
+      </div>
+
+      <div class="row g-3">
         <div class="col-12 col-lg-4">
           <label class="form-label">Alérgico a algum medicamento?</label>
           <div class="soft-radio">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="alergico_medicamento" value="Sim"
-                {{-- {{ $aluno->alergico_medicamento === 'Sim' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Sim</label>
+              <input class="form-check-input" type="radio" name="alergico_medicamento" id="am_sim" value="1"
+                {{ old('alergico_medicamento', $aluno->alergico_medicamento) == '1' ? 'checked' : '' }}
+                onchange="toggleQual('am_qual')">
+              <label class="form-check-label" for="am_sim">Sim</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="alergico_medicamento" value="Não"
-                {{-- {{ $aluno->alergico_medicamento === 'Não' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Não</label>
+              <input class="form-check-input" type="radio" name="alergico_medicamento" id="am_nao" value="0"
+                {{ old('alergico_medicamento', $aluno->alergico_medicamento) == '0' ? 'checked' : '' }}
+                onchange="toggleQual('am_qual')">
+              <label class="form-check-label" for="am_nao">Não</label>
             </div>
           </div>
-          <input name="alergico_medicamento_qual" class="form-control soft-input mt-2" value="{{-- {{ $aluno->alergico_medicamento_qual }} --}}">
+          <div id="am_qual" style="{{ old('alergico_medicamento', $aluno->alergico_medicamento) == '1' ? '' : 'display:none;' }}">
+            <label class="form-label mt-2">Qual?</label>
+            <textarea name="alergico_medicamento_qual" class="form-control soft-input soft-textarea" rows="3">{{ old('alergico_medicamento_qual', $aluno->alergico_medicamento_qual) }}</textarea>
+          </div>
         </div>
 
         <div class="col-12 col-lg-4">
           <label class="form-label">Alérgico a algum alimento?</label>
           <div class="soft-radio">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="alergico_alimento" value="Sim"
-                {{-- {{ $aluno->alergico_alimento === 'Sim' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Sim</label>
+              <input class="form-check-input" type="radio" name="alergico_alimento" id="aa_sim" value="1"
+                {{ old('alergico_alimento', $aluno->alergico_alimento) == '1' ? 'checked' : '' }}
+                onchange="toggleQual('aa_qual')">
+              <label class="form-check-label" for="aa_sim">Sim</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="alergico_alimento" value="Não"
-                {{-- {{ $aluno->alergico_alimento === 'Não' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Não</label>
+              <input class="form-check-input" type="radio" name="alergico_alimento" id="aa_nao" value="0"
+                {{ old('alergico_alimento', $aluno->alergico_alimento) == '0' ? 'checked' : '' }}
+                onchange="toggleQual('aa_qual')">
+              <label class="form-check-label" for="aa_nao">Não</label>
             </div>
           </div>
-          <input name="alergico_alimento_qual" class="form-control soft-input mt-2" value="{{-- {{ $aluno->alergico_alimento_qual }} --}}">
+          <div id="aa_qual" style="{{ old('alergico_alimento', $aluno->alergico_alimento) == '1' ? '' : 'display:none;' }}">
+            <label class="form-label mt-2">Qual?</label>
+            <textarea name="alergico_alimento_qual" class="form-control soft-input soft-textarea" rows="3">{{ old('alergico_alimento_qual', $aluno->alergico_alimento_qual) }}</textarea>
+          </div>
         </div>
 
         <div class="col-12 col-lg-4">
-          <label class="form-label">Faz uso de uma medicação específica?</label>
+          <label class="form-label">Faz uso de medicação específica?</label>
           <div class="soft-radio">
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="usa_medicacao" value="Sim"
-                {{-- {{ $aluno->usa_medicacao === 'Sim' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Sim</label>
+              <input class="form-check-input" type="radio" name="usa_medicacao" id="um_sim" value="1"
+                {{ old('usa_medicacao', $aluno->usa_medicacao) == '1' ? 'checked' : '' }}
+                onchange="toggleQual('um_qual')">
+              <label class="form-check-label" for="um_sim">Sim</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="usa_medicacao" value="Não"
-                {{-- {{ $aluno->usa_medicacao === 'Não' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Não</label>
+              <input class="form-check-input" type="radio" name="usa_medicacao" id="um_nao" value="0"
+                {{ old('usa_medicacao', $aluno->usa_medicacao) == '0' ? 'checked' : '' }}
+                onchange="toggleQual('um_qual')">
+              <label class="form-check-label" for="um_nao">Não</label>
             </div>
           </div>
-          <input name="usa_medicacao_qual" class="form-control soft-input mt-2" value="{{-- {{ $aluno->usa_medicacao_qual }} --}}">
+          <div id="um_qual" style="{{ old('usa_medicacao', $aluno->usa_medicacao) == '1' ? '' : 'display:none;' }}">
+            <label class="form-label mt-2">Qual?</label>
+            <textarea name="usa_medicacao_qual" class="form-control soft-input soft-textarea" rows="3">{{ old('usa_medicacao_qual', $aluno->usa_medicacao_qual) }}</textarea>
+          </div>
         </div>
 
         <div class="col-12">
-          <label class="form-label">Quais profissionais a criança passa</label>
-          <textarea name="profissionais_crianca" class="form-control soft-input soft-textarea" rows="4">{{-- {{ $aluno->profissionais_crianca }} --}}</textarea>
+          <label class="form-label">Quais profissionais a criança já passa?</label>
+          <textarea name="profissionais_crianca" class="form-control soft-input soft-textarea" rows="3">{{ old('profissionais_crianca', $aluno->profissionais_crianca) }}</textarea>
         </div>
-
-      </div> {{-- fecha row Dados do aluno --}}
+      </div>
 
       {{-- Dados do responsável --}}
-      <h2 class="section-title mt-4">Dados do Responsável</h2>
+      <hr class="block-divider">
+      <div class="section-header">
+        <div class="section-icon">👨‍👩‍👧</div>
+        <h2 class="section-title">Dados do Responsável</h2>
+      </div>
 
       <div class="row g-3">
-
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-md-6">
           <label class="form-label">Nome completo</label>
-          <input name="resp_nome" class="form-control soft-input" value="{{-- {{ $aluno->resp_nome }} --}}">
+          <input type="text" name="resp_nome" value="{{ old('resp_nome', $aluno->resp_nome) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-md-6">
           <label class="form-label">Data de Nascimento</label>
-          <input type="date" name="resp_data_nascimento" class="form-control soft-input" value="">
-          {{-- value="{{ $aluno->resp_data_nascimento }}" --}}
+          <input type="date" name="resp_data_nascimento" value="{{ old('resp_data_nascimento', $aluno->resp_data_nascimento) }}" class="form-control soft-input">
         </div>
 
         <div class="col-12 col-md-4">
           <label class="form-label">RG</label>
-          <input name="resp_rg" class="form-control soft-input" value="{{-- {{ $aluno->resp_rg }} --}}">
+          <input type="text" name="resp_rg" value="{{ old('resp_rg', $aluno->resp_rg) }}" class="form-control soft-input">
         </div>
 
         <div class="col-12 col-md-4">
           <label class="form-label">CPF</label>
-          <input name="resp_cpf" class="form-control soft-input" value="{{-- {{ $aluno->resp_cpf }} --}}">
+          <input type="text" name="resp_cpf" value="{{ old('resp_cpf', $aluno->resp_cpf) }}" class="form-control soft-input">
         </div>
 
         <div class="col-12 col-md-4">
           <label class="form-label">Estado Civil</label>
-          <input name="resp_estado_civil" class="form-control soft-input" value="{{-- {{ $aluno->resp_estado_civil }} --}}">
+          <input type="text" name="resp_estado_civil" value="{{ old('resp_estado_civil', $aluno->resp_estado_civil) }}" class="form-control soft-input">
         </div>
 
-        <div class="col-12 col-lg-5">
-          <label class="form-label">O aluno ficará na lista de espera?</label>
-          <div class="soft-radio">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="lista_espera" value="Sim"
-                {{-- {{ $aluno->lista_espera === 'Sim' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Sim</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="lista_espera" value="Não"
-                {{-- {{ $aluno->lista_espera === 'Não' ? 'checked' : '' }} --}}
-              >
-              <label class="form-check-label">Não</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-lg-7">
-          <label class="form-label">Quais profissionais o aluno necessita?</label>
+        <div class="col-12">
+          <label class="form-label">Filas de espera que o aluno está inserido</label>
           <div class="chips">
-
-            {{-- quando tiver isso vindo do banco:
-            @php $listaNecessita = $aluno->necessita_profissionais ?? []; @endphp
-            --}}
-
-            @php $listaNecessita = []; @endphp
-
-            @foreach(['Psicopedagogo','Psiconutricista','Fisioterapeuta','Fonoaudiólogo','Neuropsicólogo','Libras','Musicoterapia'] as $p)
+            @forelse($listaEspera as $lista)
               <label class="chip">
-                <input type="checkbox" name="necessita_profissionais[]" value="{{ $p }}"
-                  {{-- {{ in_array($p, $listaNecessita) ? 'checked' : '' }} --}}
-                >
-                <span>{{ $p }}</span>
+                <input type="checkbox" name="listasEspera[]" value="{{ $lista->id }}"
+                  {{ $aluno->listasEspera->contains('id', $lista->id) ? 'checked' : '' }}>
+                <span>{{ $lista->nome }}</span>
               </label>
-            @endforeach
+            @empty
+              <p style="color:#94a3b8; font-size:0.85rem;">Nenhuma lista de espera ativa cadastrada.</p>
+            @endforelse
           </div>
         </div>
+      </div>
 
-      </div> {{-- fecha row responsável --}}
+      {{-- Métricas do núcleo --}}
+      <div class="metric-section">
 
-      {{-- BOTÕES FINAIS (opcional, já tem Salvar lá em cima; mas é bom ter aqui também) --}}
+        <h2 class="metric-title">📊 Informações para Metrificação do Núcleo</h2>
+        <p class="metric-subtitle">Dados utilizados para relatórios estatísticos e planejamento institucional</p>
+
+        <div class="row g-4">
+
+          <div class="col-12">
+            <label class="form-label">Tipo de Deficiência</label>
+            <div class="chips metric-chips">
+              @foreach($deficiencias as $deficiencia)
+                <label class="chip metric-chip">
+                  <input type="checkbox" name="deficiencias[]" value="{{ $deficiencia->id }}"
+                    {{ $aluno->deficiencias->contains('id', $deficiencia->id) ? 'checked' : '' }}>
+                  <span>{{ $deficiencia->nome }}</span>
+                </label>
+              @endforeach
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Diagnósticos Clínicos</label>
+            <div class="chips metric-chips">
+              @foreach($diagnosticos as $diagnostico)
+                <label class="chip metric-chip">
+                  <input type="checkbox" name="diagnosticos[]" value="{{ $diagnostico->id }}"
+                    {{ $aluno->diagnosticos->contains('id', $diagnostico->id) ? 'checked' : '' }}>
+                  <span>{{ $diagnostico->nome }}</span>
+                </label>
+              @endforeach
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Grau de Suporte</label>
+            <select name="grau_suporte" class="form-select soft-input">
+              <option value="">Selecione</option>
+              @foreach(['Nível 1' => 'Nível 1 (Leve)', 'Nível 2' => 'Nível 2 (Moderado)', 'Nível 3' => 'Nível 3 (Intenso)'] as $val => $label)
+                <option value="{{ $val }}" {{ old('grau_suporte', $aluno->grau_suporte) === $val ? 'selected' : '' }}>{{ $label }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Possui Laudo Médico?</label>
+            <select name="possui_laudo" class="form-select soft-input">
+              <option value="">Selecione</option>
+              <option value="1" {{ old('possui_laudo', $aluno->possui_laudo) == '1' ? 'selected' : '' }}>Sim</option>
+              <option value="0" {{ old('possui_laudo', $aluno->possui_laudo) === '0' ? 'selected' : '' }}>Não</option>
+            </select>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Origem do Encaminhamento</label>
+            <select name="origem_encaminhamento_id" class="form-select soft-input">
+              <option value="">Selecione</option>
+              @foreach($origens as $origem)
+                <option value="{{ $origem->id }}" {{ old('origem_encaminhamento_id', $aluno->origem_encaminhamento_id) == $origem->id ? 'selected' : '' }}>
+                  {{ $origem->nome }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Data do Diagnóstico</label>
+            <input type="date" name="data_diagnostico" value="{{ old('data_diagnostico', $aluno->data_diagnostico) }}" class="form-control soft-input">
+          </div>
+
+        </div>{{-- fim .row métricas --}}
+      </div>{{-- fim .metric-section --}}
+
+      {{-- Adicionar novos documentos --}}
+      <hr class="block-divider">
+      <div class="section-header">
+        <div class="section-icon">📎</div>
+        <h2 class="section-title">Adicionar Documentos</h2>
+      </div>
+
+      <div class="documentos-area">
+        <label class="documentos-dropzone" id="dropzone" for="documentos">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+          </svg>
+          <span class="dropzone-titulo">Clique para selecionar ou arraste os arquivos aqui</span>
+          <span class="dropzone-sub">PDF ou imagem • Você pode enviar vários arquivos</span>
+        </label>
+        <input type="file" id="documentos" name="documentos[]" multiple class="d-none" accept=".pdf,image/*">
+
+        <ul id="listaDocumentos" class="lista-documentos"></ul>
+      </div>
+
+      {{-- Botões --}}
       <div class="mt-4 d-flex justify-content-end gap-2">
-        <a href="" class="btn btn-upload">Cancelar</a>
-        {{-- href esperado:
-        href="{{ route('alunos.show', $aluno->id) }}"
-        --}}
+        <a href="{{ route('alunos.show', $aluno->id) }}" class="btn btn-soft-secondary">Cancelar</a>
         <button type="submit" class="btn btn-soft-primary">Salvar alterações</button>
       </div>
 
     </form>
-    {{-- FIM DO FORM PRINCIPAL --}}
 
-    {{-- ===============================
-         Áreas que NÃO são edição direta
-         (Arquivos lançados / Histórico)
-         Você pode manter fora do form.
-         =============================== --}}
-
-    {{-- Arquivos lançados --}}
+    {{-- Documentos já salvos (fora do form principal para evitar forms aninhados) --}}
     <div class="mt-4">
-      <h2 class="section-title">Arquivos lançados</h2>
-
-      <div class="file-list">
-
-        {{-- DESCOMENTE QUANDO TIVER $arquivos
-        @forelse($arquivos as $arq)
-        --}}
-          <div class="file-item">
-            <div>
-              <div class="file-name">Nome do arquivo</div>
-              <div class="file-sub">Categoria</div>
-              {{-- <div class="file-name">{{ $arq->nome_original }}</div>
-              <div class="file-sub">{{ $arq->categoria ?? 'Documento' }}</div> --}}
-            </div>
-
-            <div class="file-actions">
-              <a class="icon-btn" href="" title="Visualizar">
-                <i class="bi bi-eye"></i>
-              </a>
-
-              <form action="" method="POST" onsubmit="return confirm('Excluir este arquivo?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="icon-btn danger" title="Excluir">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </form>
-            </div>
-          </div>
-        {{--
-        @empty
-          <div class="muted">Nenhum arquivo anexado.</div>
-        @endforelse
-        --}}
-
+      <hr class="block-divider">
+      <div class="section-header">
+        <div class="section-icon">📎</div>
+        <h2 class="section-title">Documentos do Aluno</h2>
       </div>
+
+      @forelse($aluno->documentosAluno as $doc)
+        @php
+          $ext = strtolower(pathinfo($doc->nome_original, PATHINFO_EXTENSION));
+          $isPdf = $ext === 'pdf';
+        @endphp
+        <div class="doc-card">
+          <div class="doc-card-icon">
+            @if($isPdf)
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              </svg>
+            @else
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+            @endif
+          </div>
+
+          <div class="doc-card-info">
+            <span class="doc-card-nome">{{ $doc->nome_original }}</span>
+            <span class="doc-card-ext">{{ strtoupper($ext) }}</span>
+          </div>
+
+          <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
+            <a href="{{ asset('storage/' . $doc->arquivo) }}" target="_blank" class="doc-card-btn" title="Visualizar documento">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Ver
+            </a>
+
+            <form action="{{ route('alunos.documentos.destroy', $doc->id) }}" method="POST"
+              onsubmit="return confirm('Excluir o arquivo \'{{ addslashes($doc->nome_original) }}\'?')">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="doc-card-btn doc-card-btn--danger" title="Excluir documento">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+                Excluir
+              </button>
+            </form>
+          </div>
+        </div>
+      @empty
+        <p class="doc-vazio">Nenhum documento anexado.</p>
+      @endforelse
     </div>
 
     {{-- Histórico de atendimentos --}}
     <div class="mt-4">
+      <hr class="block-divider">
       <div class="d-flex align-items-center justify-content-between">
         <h2 class="section-title m-0">Histórico de atendimentos</h2>
-        <a href="" class="link-mini">Ver tudo</a>
       </div>
 
       <div class="history-box mt-2">
-
-        {{-- DESCOMENTE QUANDO TIVER $atendimentos
-        @forelse($atendimentos as $at)
-        --}}
-          <div class="history-item">
-            <div class="history-col">
-              <div class="history-label">Data de atendimento</div>
-              <div class="history-value">21/11/2025</div>
-            </div>
-
-            <div class="history-col">
-              <div class="history-label">Profissional</div>
-              <div class="history-value">Nome do Profissional</div>
-            </div>
-
-            <div class="history-col">
-              <div class="history-label">Presente no atendimento</div>
-              <div class="history-value">Sim</div>
-            </div>
-
-            <a class="icon-btn" href="" title="Ver atendimento">
-              <i class="bi bi-eye"></i>
-            </a>
-          </div>
-        {{--
-        @empty
-          <div class="muted p-3">Sem atendimentos cadastrados.</div>
-        @endforelse
-        --}}
-
+        <div class="muted p-3">Sem atendimentos cadastrados.</div>
       </div>
     </div>
 
   </div>
 </div>
-@endsection
 
-@push('scripts')
 <script>
-  // preview foto 3x4
-  const inputFoto = document.getElementById('foto');
-  const preview = document.getElementById('previewFoto');
+  // ── Campos condicionais (Sim/Não) ─────────────────────────────
+  function toggleQual(divId) {
+    var radio = document.querySelector('input[onchange*="' + divId + '"]:checked');
+    document.getElementById(divId).style.display =
+      (radio && radio.value === '1') ? 'block' : 'none';
+  }
 
-  if (inputFoto && preview) {
-    inputFoto.addEventListener('change', function () {
-      const file = this.files && this.files[0];
-      if (!file) return;
-      preview.src = URL.createObjectURL(file);
+  // ── Foto ──────────────────────────────────────────────────────
+  var fotoAtual      = {{ $aluno->foto ? 'true' : 'null' }};
+  var inputFoto      = document.getElementById('foto');
+  var previewFoto    = document.getElementById('previewFoto');
+  var avatarIcon     = document.getElementById('avatarIcon');
+  var avatarOverlay  = document.getElementById('avatarOverlay');
+  var avatarBadge    = document.getElementById('avatarBadge');
+  var avatarCircle   = document.getElementById('avatarCircle');
+  var fotoLabel      = document.getElementById('fotoLabel');
+  var fotoActionMenu = document.getElementById('fotoActionMenu');
+  var fotoRemover    = document.getElementById('fotoRemover');
+
+  avatarCircle.addEventListener('click', function (e) {
+    if (fotoAtual) {
+      e.stopPropagation();
+      posicionarMenu();
+      fotoActionMenu.classList.toggle('open');
+      return;
+    }
+    inputFoto.click();
+  });
+
+  document.addEventListener('click', function () {
+    fotoActionMenu.classList.remove('open');
+  });
+
+  fotoActionMenu.addEventListener('click', function (e) {
+    e.stopPropagation();
+  });
+
+  function posicionarMenu() {
+    var rect = avatarCircle.getBoundingClientRect();
+    fotoActionMenu.style.top  = (rect.bottom + window.scrollY + 8) + 'px';
+    fotoActionMenu.style.left = (rect.left  + window.scrollX)      + 'px';
+  }
+
+  inputFoto.addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    if (!file) return;
+    aplicarFoto(URL.createObjectURL(file));
+    fotoRemover.value = '0';
+    fotoActionMenu.classList.remove('open');
+  });
+
+  function aplicarFoto(url) {
+    fotoAtual                   = url;
+    previewFoto.src             = url;
+    previewFoto.style.display   = 'block';
+    avatarIcon.style.display    = 'none';
+    avatarOverlay.style.display = 'flex';
+    avatarBadge.style.display   = 'none';
+    fotoLabel.textContent       = 'Clique na foto para opções';
+    document.getElementById('lightboxImg').src = url;
+  }
+
+  document.getElementById('btnVerFoto').addEventListener('click', function () {
+    fotoActionMenu.classList.remove('open');
+    document.getElementById('lightboxBackdrop').classList.add('open');
+  });
+
+  document.getElementById('lightboxClose').addEventListener('click', fecharLightbox);
+  document.getElementById('lightboxBackdrop').addEventListener('click', function (e) {
+    if (e.target === this) fecharLightbox();
+  });
+
+  function fecharLightbox() {
+    document.getElementById('lightboxBackdrop').classList.remove('open');
+  }
+
+  document.getElementById('btnTrocarFoto').addEventListener('click', function () {
+    fotoActionMenu.classList.remove('open');
+    inputFoto.value = '';
+    inputFoto.click();
+  });
+
+  document.getElementById('btnExcluirFoto').addEventListener('click', function () {
+    fotoActionMenu.classList.remove('open');
+    document.getElementById('confirmBackdrop').classList.add('open');
+  });
+
+  document.getElementById('btnCancelExcluir').addEventListener('click', function () {
+    document.getElementById('confirmBackdrop').classList.remove('open');
+  });
+
+  document.getElementById('confirmBackdrop').addEventListener('click', function (e) {
+    if (e.target === this) document.getElementById('confirmBackdrop').classList.remove('open');
+  });
+
+  document.getElementById('btnConfirmExcluir').addEventListener('click', function () {
+    fotoAtual                   = null;
+    previewFoto.src             = '';
+    previewFoto.style.display   = 'none';
+    avatarIcon.style.display    = 'flex';
+    avatarOverlay.style.display = 'none';
+    avatarBadge.style.display   = 'flex';
+    fotoLabel.textContent       = 'Clique para adicionar';
+    inputFoto.value             = '';
+    fotoRemover.value           = '1';
+    document.getElementById('lightboxImg').src = '';
+    document.getElementById('confirmBackdrop').classList.remove('open');
+  });
+
+  // ── Documentos (drag & drop + clique) ────────────────────────
+  var arquivosSelecionados = [];
+  var inputDocumentos      = document.getElementById('documentos');
+  var dropzone             = document.getElementById('dropzone');
+
+  inputDocumentos.addEventListener('change', function () {
+    adicionarArquivos(this.files);
+  });
+
+  dropzone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+
+  dropzone.addEventListener('dragleave', function () {
+    dropzone.classList.remove('dragover');
+  });
+
+  dropzone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    adicionarArquivos(e.dataTransfer.files);
+  });
+
+  function adicionarArquivos(files) {
+    for (var i = 0; i < files.length; i++) {
+      arquivosSelecionados.push(files[i]);
+    }
+    renderizarLista();
+  }
+
+  function renderizarLista() {
+    var lista        = document.getElementById('listaDocumentos');
+    var dataTransfer = new DataTransfer();
+    lista.innerHTML  = '';
+
+    arquivosSelecionados.forEach(function (arquivo, index) {
+      dataTransfer.items.add(arquivo);
+
+      var icone = arquivo.type.startsWith('image/') ? '🖼️' : '📄';
+      var tamanho = (arquivo.size / 1024).toFixed(1) + ' KB';
+
+      var item = document.createElement('li');
+      item.innerHTML =
+        '<div class="doc-info">' +
+          '<span class="doc-icone">' + icone + '</span>' +
+          '<div>' +
+            '<span class="doc-nome">' + arquivo.name + '</span>' +
+            '<span class="doc-tamanho">' + tamanho + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="doc-remover" onclick="removerArquivo(' + index + ')" title="Remover">' +
+          '&times;' +
+        '</button>';
+      lista.appendChild(item);
     });
+
+    inputDocumentos.files = dataTransfer.files;
+  }
+
+  function removerArquivo(index) {
+    arquivosSelecionados.splice(index, 1);
+    renderizarLista();
   }
 </script>
-@endpush
+
+@endsection
