@@ -8,6 +8,15 @@ use Illuminate\Http\Request;
 
 class ListaEsperaController extends Controller
 {
+    public function filas()
+    {
+        $listas = ListaEspera::with(['alunos' => function ($q) {
+            $q->orderBy('lista_espera_aluno.data_entrada');
+        }, 'profissionais'])->where('ativo', true)->get();
+
+        return view('lista_espera.filas', compact('listas'));
+    }
+
     /**
      * Display a listing of the resource.
      */

@@ -21,6 +21,6 @@ class ListaEspera extends Model
     }
 
     public function alunos(){
-        return $this->belongsToMany(Aluno::class, 'lista_espera_aluno');
+        return $this->belongsToMany(Aluno::class, 'lista_espera_aluno')->withPivot('data_entrada', 'status');
     }
 }

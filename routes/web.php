@@ -12,6 +12,7 @@ use App\Http\Controllers\ListaEsperaController;
 use App\Http\Controllers\OrigemEncaminhamentoController;
 use App\Http\Controllers\AlunoController;
 use App\Http\Controllers\DocumentoAlunoController;
+use App\Http\Controllers\HorarioProfissionalController;
 
 /*Rotas para definir a página inicial como o índex do sistema e para deixar o diretório de partida sendo o login*/
 Route::get('/', fn () => redirect()->route('login.form'));
@@ -40,6 +41,15 @@ Route::resource('profissionais', ProfissionalController::class)->parameters(['pr
 
 Route::patch('profissionais/{profissional}/toggle', [ProfissionalController::class, 'toggle'])->name('profissionais.toggle');
 
+//Horários do profissional
+Route::get('horarios', [HorarioProfissionalController::class, 'index'])->name('horarios.index');
+Route::get('horarios/{profissional}', [HorarioProfissionalController::class, 'show'])->name('horarios.show');
+Route::post('horarios/{profissional}', [HorarioProfissionalController::class, 'store'])->name('horarios.store');
+Route::get('horarios/{profissional}/{horario}/edit', [HorarioProfissionalController::class, 'edit'])->name('horarios.edit');
+Route::put('horarios/{profissional}/{horario}', [HorarioProfissionalController::class, 'update'])->name('horarios.update');
+Route::delete('horarios/{profissional}/{horario}', [HorarioProfissionalController::class, 'destroy'])->name('horarios.destroy');
+Route::patch('horarios/{profissional}/{horario}/toggle', [HorarioProfissionalController::class, 'toggle'])->name('horarios.toggle');
+
 
 //Rotas de atendimento
 Route::view('/agendamento', 'atendimento.index')->name('agendamento');
@@ -54,5 +64,6 @@ Route::resource('origensEncaminhamento', OrigemEncaminhamentoController::class)-
 
 
 //Lista de espera
+Route::get('listasEspera/filas', [ListaEsperaController::class, 'filas'])->name('listasEspera.filas');
 Route::resource('listasEspera', ListaEsperaController::class)->parameters(['listasEspera' => 'lista'])->only(['index', 'store', 'update']);
 Route::patch('listasEspera/{lista}/toggle', [ListaEsperaController::class, 'toggle'])->name('listasEspera.toggle');

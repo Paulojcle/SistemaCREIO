@@ -86,8 +86,7 @@
           <ul class="submenu">
             <li><a href="{{ route('agendamento') }}">Agendamentos</a></li>
             <li><a href="{{ route('atendimento.lancar') }}">Lançar atendimento</a></li>
-            <li><a href="#">Lista de espera</a></li>
-            <li><a href="#">Horários de atendimento</a></li>
+            <li><a href="{{ route('listasEspera.filas') }}">Lista de espera</a></li>
           </ul>
         </details>
       </li>
@@ -114,6 +113,7 @@
             <li><a href="{{ route('deficiencias.index') }}">Tipos de Deficiência</a></li>
             <li><a href="{{ route('origensEncaminhamento.index') }}">Origens de Encaminhamento</a></li>
             <li><a href="{{ route('listasEspera.index') }}">Cadastrar listas de Espera</a></li>
+            <li><a href="{{ route('horarios.index') }}">Cadastrar horários de atendimento</a></li>
             <li><a href="#">Usuários</a></li>
             <li><a href="#">Perfis e Permissões</a></li>
           </ul>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ListaEspera;
+use App\Models\HorarioProfissional;
 
 class Profissional extends Model
 {
@@ -39,5 +40,9 @@ class Profissional extends Model
 
   public function listasEspera(){
     return $this->belongsToMany(ListaEspera::class, 'lista_espera_profissional');
+  }
+
+  public function horarios(){
+    return $this->hasMany(HorarioProfissional::class);
   }
 }
