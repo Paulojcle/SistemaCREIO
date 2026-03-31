@@ -19,6 +19,23 @@ body{
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
+/* Garante texto branco em toda a sidebar, independente da página */
+.sidebar,
+.sidebar * {
+  color: #fff !important;
+}
+
+/* Exceção: dropdown do usuário usa texto escuro */
+.user-dropdown,
+.user-dropdown * {
+  color: #163C25 !important;
+}
+
+.user-item.danger,
+.user-item.danger * {
+  color: #b42318 !important;
+}
+
 .sidebar{
   position: fixed;
   left: 0;

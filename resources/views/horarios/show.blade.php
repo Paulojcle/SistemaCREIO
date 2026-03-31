@@ -70,6 +70,30 @@
         padding: 5px 14px;
         border-radius: 8px;
     }
+    .badge-disponivel {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+    }
+    .badge-ocupado {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+    }
 </style>
 @endpush
 
@@ -114,6 +138,18 @@
                                 <span class="badge-status {{ $horario->ativo ? 'badge-ativo' : 'badge-inativo' }}" style="font-size: 11px; padding: 3px 10px;">
                                     {{ $horario->ativo ? 'Ativo' : 'Inativo' }}
                                 </span>
+                            </span>
+                            @php $alunoAtivo = $horario->agendamentos->first()?->aluno; @endphp
+                            <span style="margin-left: 8px;">
+                                @if($alunoAtivo)
+                                    <span class="badge-ocupado">
+                                        <i class="bi bi-person-fill"></i> Ocupado — {{ $alunoAtivo->nome }}
+                                    </span>
+                                @else
+                                    <span class="badge-disponivel">
+                                        <i class="bi bi-check-circle-fill"></i> Disponível
+                                    </span>
+                                @endif
                             </span>
                         </div>
                         <div class="horario-actions">

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Agendamento;
 
 class HorarioProfissional extends Model
 {
@@ -29,5 +30,9 @@ class HorarioProfissional extends Model
     {
         $dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
         return $dias[$this->dia_semana] ?? '-';
+    }
+
+    public function agendamentos(){
+        return $this->hasMany(Agendamento::class, 'horarios_profissional_id');
     }
 }

@@ -56,6 +56,10 @@ class AlunoController extends Controller
         $data['possui_laudo'] = $request->boolean('possui_laudo');
 
         $aluno = Aluno::create($data);
+        if($request->hasFile('foto')){
+            $caminho = $request->file('foto')->store('fotos/alunos', 'public');
+            $aluno->update(['foto' => $caminho]);
+        }
 
         $aluno->deficiencias()->sync($request->deficiencias ?? []);
         $aluno->diagnosticos()->sync($request->diagnosticos ?? []);
@@ -85,7 +89,8 @@ class AlunoController extends Controller
     public function show(Aluno $aluno)
     {
         $aluno->load('escola', 'origemEncaminhamento', 'deficiencias', 'diagnosticos', 'listasEspera', 'documentosAluno');
-        return view('aluno.showAluno', compact('aluno'));
+        $atendimentos = $aluno->registrosAtendimento()->with('documentos', 'profissional')->get();
+        return view('aluno.showAluno', compact('aluno', 'atendimentos'));
     }
 
     /**
@@ -111,6 +116,12 @@ class AlunoController extends Controller
     {
         $data = $request->except(['deficiencias', 'diagnosticos', 'listasEspera', 'documentos', '_token', '_method']);
         $data['possui_laudo'] = $request->boolean('possui_laudo');
+
+
+        if ($request->hasFile('foto')){
+            $caminho = $request->file('foto')->store('fotos/alunos', 'public');
+            $data['foto'] = $caminho;
+        }
 
         $aluno->update($data);
 
@@ -141,10 +152,35 @@ class AlunoController extends Controller
     /**
      * Ativa ou desativa o aluno.
      */
-    public function toggle(Aluno $aluno)
+    public function toggle(Request $request, Aluno $aluno)
     {
-        $aluno->update(['ativo' => !$aluno->ativo]);
-        $status = $aluno->ativo ? 'reativado' : 'desativado';
-        return redirect()->route('alunos.index')->with('success', "Aluno {$aluno->nome} {$status} com sucesso!");
+        if ($aluno->ativo) {
+            $request->validate([
+                'justificativa' => 'required|string|max:1000',
+                'documento'     => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            ], [
+                'justificativa.required' => 'A justificativa de desligamento é obrigatória.',
+            ]);
+
+            $aluno->update([
+                'ativo'                      => false,
+                'justificativa_desligamento' => $request->justificativa,
+            ]);
+
+            if ($request->hasFile('documento')) {
+                $arquivo = $request->file('documento');
+                $caminho = $arquivo->store('documentos/alunos', 'public');
+                $aluno->documentosAluno()->create([
+                    'nome_original' => $arquivo->getClientOriginalName(),
+                    'arquivo'       => $caminho,
+                    'tipo_mime'     => $arquivo->getMimeType(),
+                ]);
+            }
+
+            return redirect()->route('alunos.index')->with('success', "Aluno {$aluno->nome} desativado com sucesso!");
+        }
+
+        $aluno->update(['ativo' => true, 'justificativa_desligamento' => null]);
+        return redirect()->route('alunos.index')->with('success', "Aluno {$aluno->nome} reativado com sucesso!");
     }
 }

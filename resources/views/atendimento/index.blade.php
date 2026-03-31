@@ -1,165 +1,224 @@
 @extends('layouts.app')
 
 @push('styles')
+<link rel="stylesheet" href="{{ asset('assets/css/admin/crud.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/atendimento/index.css') }}">
 @endpush
 
 @section('content')
+
+@php
+  $dataSelecionada = request()->query('data', today()->toDateString());
+  $profissionalId  = request()->query('profissional_id');
+  $alunoId         = request()->query('aluno_id');
+
+  $dataCarbon   = \Carbon\Carbon::parse($dataSelecionada);
+  $inicioSemana = $dataCarbon->copy()->startOfWeek(\Carbon\Carbon::MONDAY);
+  $fimSemana    = $inicioSemana->copy()->endOfWeek(\Carbon\Carbon::SUNDAY);
+
+  $diasSemana = [];
+  for ($i = 0; $i < 7; $i++) {
+    $diasSemana[] = $inicioSemana->copy()->addDays($i);
+  }
+
+  $semanaAnterior = $inicioSemana->copy()->subDays(1)->toDateString();
+  $proximaSemana  = $fimSemana->copy()->addDays(1)->toDateString();
+
+  $nomeDia = [
+    'Monday'    => 'Segunda-feira',
+    'Tuesday'   => 'Terça-feira',
+    'Wednesday' => 'Quarta-feira',
+    'Thursday'  => 'Quinta-feira',
+    'Friday'    => 'Sexta-feira',
+    'Saturday'  => 'Sábado',
+    'Sunday'    => 'Domingo',
+  ];
+
+  $diaSemanaAbrev = [
+    'Monday'    => 'Seg',
+    'Tuesday'   => 'Ter',
+    'Wednesday' => 'Qua',
+    'Thursday'  => 'Qui',
+    'Friday'    => 'Sex',
+    'Saturday'  => 'Sáb',
+    'Sunday'    => 'Dom',
+  ];
+
+  $meses = [
+    1  => 'janeiro', 2  => 'fevereiro', 3  => 'março',
+    4  => 'abril',   5  => 'maio',      6  => 'junho',
+    7  => 'julho',   8  => 'agosto',    9  => 'setembro',
+    10 => 'outubro', 11 => 'novembro',  12 => 'dezembro',
+  ];
+
+  $nomeDiaFormatado = $nomeDia[$dataCarbon->format('l')]
+    . ', ' . $dataCarbon->day
+    . ' de ' . $meses[(int)$dataCarbon->month]
+    . ' de ' . $dataCarbon->year;
+
+  $profissionais = isset($profissionais) ? $profissionais : collect();
+  $agendamentos  = isset($agendamentos)  ? $agendamentos  : collect();
+@endphp
+
+<div class="aluno-page">
+<div class="aluno-card">
 <div class="ag-page">
 
-  {{-- ====== FILTRO (topo) ====== --}}
-  <div class="ag-filter-wrap">
-    <div class="ag-filter-card">
-      <div class="ag-filter-title">Filtro</div>
-      <form class="ag-filter-form" action="#" method="GET">
-        <input class="ag-input" type="text" name="profissional" placeholder="Profissional">
-        <input class="ag-input" type="date" name="data">
-        <button class="ag-btn" type="submit">Filtrar</button>
-      </form>
-    </div>
+  {{-- ===== CABEÇALHO ===== --}}
+  <div class="ag-header">
+    <h1 class="ag-title">Agendamentos</h1>
+    <a href="{{ route('atendimento.lancar') }}" class="ag-btn-novo">
+      <i class="bi bi-plus-lg"></i> Novo agendamento
+    </a>
   </div>
 
-  {{-- ====== QUADRO DE HORÁRIOS ====== --}}
-  <section class="ag-board">
-    <header class="ag-board-head">
-      <div class="ag-board-left">
-        <h2 class="ag-board-title">Horários agendados</h2>
-      </div>
+  {{-- ===== FILTROS ===== --}}
+  <div class="ag-filter-bar">
+    <form method="GET" action="{{ route('agendamentos') }}" class="ag-filter-form">
+      <input type="hidden" name="data" value="{{ $dataSelecionada }}">
 
-      <div class="ag-board-right">
-        {{-- Front-only: texto fixo --}}
-        <div class="ag-date">29 de outubro de 2025</div>
-      </div>
-    </header>
+      <label class="ag-filter-label" for="profissional_id">
+        <i class="bi bi-person-badge"></i> Profissional
+      </label>
+      <select name="profissional_id" id="profissional_id" class="ag-filter-select" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        @foreach($profissionais as $prof)
+          <option value="{{ $prof->id }}" {{ $profissionalId == $prof->id ? 'selected' : '' }}>
+            {{ $prof->nome }}
+          </option>
+        @endforeach
+      </select>
 
-    {{-- Grade (colunas por horário) --}}
-    <div class="ag-grid">
+      <label class="ag-filter-label" for="aluno_id" style="margin-left:12px;">
+        <i class="bi bi-person"></i> Aluno
+      </label>
+      <select name="aluno_id" id="aluno_id" class="ag-filter-select" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        @foreach($alunos as $aluno)
+          <option value="{{ $aluno->id }}" {{ $alunoId == $aluno->id ? 'selected' : '' }}>
+            {{ $aluno->nome }}
+          </option>
+        @endforeach
+      </select>
 
-      {{-- COLUNA 1 --}}
-      <div class="ag-col">
-        <div class="ag-col-time">07:30 - 08:00</div>
+    </form>
+  </div>
 
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
+  {{-- ===== NAVEGAÇÃO SEMANAL ===== --}}
+  <div class="ag-semana-wrap">
 
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
+    <a href="{{ route('agendamentos', array_filter(['data' => $semanaAnterior, 'profissional_id' => $profissionalId, 'aluno_id' => $alunoId])) }}"
+       class="ag-semana-nav" title="Semana anterior">
+      <i class="bi bi-chevron-left"></i>
+    </a>
 
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
-
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
-
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-      </div>
-
-      {{-- COLUNA 2 --}}
-      <div class="ag-col">
-        <div class="ag-col-time">08:10 - 08:40</div>
-
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
-
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
-
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
-
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-      </div>
-
-      {{-- COLUNA 3 --}}
-      <div class="ag-col">
-        <div class="ag-col-time">08:45 - 09:15</div>
-
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
-
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
-
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-
-        <div class="ag-card">
-          <div class="ag-row"><span>Nome:</span> Fernanda Araújo Gonçalves</div>
-          <div class="ag-row"><span>Profissional:</span> Psicólogo(a)</div>
-          <div class="ag-row"><span>Aluno:</span> Gabriel Almeida Bastos</div>
-
-          <div class="ag-actions">
-            <button class="ag-icon" type="button" title="Ver"><i class="bi bi-eye"></i></button>
-            <button class="ag-icon" type="button" title="Editar"><i class="bi bi-pencil-square"></i></button>
-            <button class="ag-icon danger" type="button" title="Excluir"><i class="bi bi-trash"></i></button>
-          </div>
-        </div>
-      </div>
-
+    <div class="ag-dias">
+      @foreach($diasSemana as $dia)
+        @php
+          $isHoje        = $dia->isToday();
+          $isSelecionado = $dia->toDateString() === $dataSelecionada;
+          $classes = 'ag-dia';
+          if ($isSelecionado)       $classes .= ' ag-dia--ativo';
+          elseif ($isHoje)          $classes .= ' ag-dia--hoje';
+        @endphp
+        <a href="{{ route('agendamentos', array_filter(['data' => $dia->toDateString(), 'profissional_id' => $profissionalId, 'aluno_id' => $alunoId])) }}"
+           class="{{ $classes }}">
+          <span class="ag-dia-nome">{{ $diaSemanaAbrev[$dia->format('l')] }}</span>
+          <span class="ag-dia-num">{{ $dia->day }}</span>
+          @if($isHoje && !$isSelecionado)
+            <span class="ag-dia-dot"></span>
+          @endif
+        </a>
+      @endforeach
     </div>
-  </section>
+
+    <a href="{{ route('agendamentos', array_filter(['data' => $proximaSemana, 'profissional_id' => $profissionalId, 'aluno_id' => $alunoId])) }}"
+       class="ag-semana-nav" title="Próxima semana">
+      <i class="bi bi-chevron-right"></i>
+    </a>
+
+  </div>
+
+  {{-- ===== LISTA DO DIA ===== --}}
+  <div class="ag-lista-wrap">
+
+    <div class="ag-lista-header">
+      <span class="ag-lista-data">
+        <i class="bi bi-calendar3"></i>
+        {{ $nomeDiaFormatado }}
+      </span>
+      <span class="ag-lista-total">
+        {{ $agendamentos->count() }} agendamento{{ $agendamentos->count() !== 1 ? 's' : '' }}
+      </span>
+    </div>
+
+    @if($agendamentos->isEmpty())
+      <div class="ag-vazio">
+        <i class="bi bi-calendar-x ag-vazio-icon"></i>
+        <p>Nenhum agendamento para este dia.</p>
+        <a href="{{ route('atendimento.lancar') }}" class="ag-btn-novo ag-btn-novo--outline">
+          <i class="bi bi-plus-lg"></i> Criar agendamento
+        </a>
+      </div>
+    @else
+      <div class="ag-cards">
+        @foreach($agendamentos as $ag)
+          @php
+            $statusClass = match($ag->status ?? 'agendado') {
+              'realizado'  => 'ag-status--realizado',
+              'cancelado'  => 'ag-status--cancelado',
+              'falta'      => 'ag-status--falta',
+              default      => 'ag-status--agendado',
+            };
+            $statusLabel = match($ag->status ?? 'agendado') {
+              'realizado'  => 'Realizado',
+              'cancelado'  => 'Cancelado',
+              'falta'      => 'Falta',
+              default      => 'Agendado',
+            };
+          @endphp
+          <div class="ag-card">
+            <div class="ag-card-hora">
+              {{ \Carbon\Carbon::parse($ag->horarioProfissional->hora_inicio)->format('H:i') }}
+              <span class="ag-card-duracao">{{ $ag->horarioProfissional->duracao_minutos }}min</span>
+            </div>
+            <div class="ag-card-info">
+              <span class="ag-card-aluno">{{ $ag->aluno->nome }}</span>
+              <span class="ag-card-prof">
+                <i class="bi bi-person-fill"></i> {{ $ag->horarioProfissional->profissional->nome }}
+              </span>
+              @if($ag->observacoes)
+                <span class="ag-card-obs">{{ $ag->observacoes }}</span>
+              @endif
+            </div>
+            <div class="ag-card-right">
+              <span class="ag-status {{ $statusClass }}">{{ $statusLabel }}</span>
+              <div class="ag-card-acoes">
+                <a href="{{ route('alunos.show', $ag->aluno_id) }}" class="ag-icon-btn" title="Ver aluno">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a href="{{ route('agendamentos.edit', $ag->id) }}" class="ag-icon-btn" title="Editar agendamento">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <form action="{{ route('agendamentos.destroy', $ag->id) }}" method="POST"
+                      onsubmit="return confirm('Remover este agendamento?')" style="display:inline">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="ag-icon-btn ag-icon-btn--danger" title="Remover agendamento">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    @endif
+
+  </div>
 
 </div>
+</div>
+</div>
+
 @endsection

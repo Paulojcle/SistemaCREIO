@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agendamento;
 use App\Models\HorarioProfissional;
 use App\Models\Profissional;
 use Illuminate\Http\Request;
@@ -17,7 +18,15 @@ class HorarioProfissionalController extends Controller
 
     public function show(Profissional $profissional)
     {
-        $profissional->load('horarios');
+        $profissional->load(['horarios' => function ($q) {
+            $q->with(['agendamentos' => function ($q2) {
+                $q2->where('status', 'agendado')
+                   ->where('data', '>=', today())
+                   ->with('aluno:id,nome')
+                   ->orderBy('data');
+            }]);
+        }]);
+
         return view('horarios.show', compact('profissional'));
     }
 

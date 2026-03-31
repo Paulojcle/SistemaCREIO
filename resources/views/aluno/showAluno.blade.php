@@ -10,16 +10,43 @@
   <div class="aluno-card">
 
     {{-- Cabeçalho --}}
-    <div class="d-flex align-items-center justify-content-between mb-1">
+    <div class="d-flex align-items-center justify-content-between mb-4">
       <h1 class="aluno-title m-0">INFORMAÇÕES DE ALUNO</h1>
-      <a href="{{ route('alunos.edit', $aluno->id) }}" class="btn btn-soft-primary" style="font-size:13px; padding:8px 16px;">
-        Editar
-      </a>
+      <div class="d-flex gap-2">
+        <a href="{{ route('alunos.index') }}" class="btn btn-soft-secondary" style="font-size:13px; padding:8px 16px;">
+          Voltar
+        </a>
+        <a href="{{ route('alunos.edit', $aluno->id) }}" class="btn btn-soft-primary" style="font-size:13px; padding:8px 16px;">
+          Editar
+        </a>
+        @if($aluno->ativo)
+          <button type="button" class="btn btn-soft-danger" style="font-size:13px; padding:8px 16px;"
+            onclick="abrirModalDesligamento({{ $aluno->id }}, '{{ addslashes($aluno->nome) }}')">
+            Desativar
+          </button>
+        @else
+          <form action="{{ route('alunos.toggle', $aluno->id) }}" method="POST" style="display:inline;">
+            @csrf
+            @method('PATCH')
+            <button type="submit" class="btn btn-success" style="font-size:13px; padding:8px 16px;"
+              onclick="return confirm('Deseja reativar {{ addslashes($aluno->nome) }}?')">
+              Reativar
+            </button>
+          </form>
+        @endif
+      </div>
     </div>
 
     @if(session('success'))
       <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:12px 16px; margin:16px 0; color:#166534;">
         {{ session('success') }}
+      </div>
+    @endif
+
+    @if(!$aluno->ativo && $aluno->justificativa_desligamento)
+      <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:14px 18px; margin-bottom:16px;">
+        <strong style="color:#b91c1c;">⛔ Aluno desligado</strong>
+        <p style="color:#7f1d1d; margin:6px 0 0; font-size:0.9rem;">{{ $aluno->justificativa_desligamento }}</p>
       </div>
     @endif
 
@@ -64,7 +91,12 @@
 
       <div class="foto-fields">
         <div class="row g-3">
-          <div class="col-12 col-md-8">
+          <div class="col-6 col-md-2">
+            <label class="form-label">ID</label>
+            <input type="text" class="form-control soft-input" value="{{ $aluno->id }}" readonly>
+          </div>
+
+          <div class="col-12 col-md-6">
             <label class="form-label">Nome completo</label>
             <input type="text" class="form-control soft-input" value="{{ $aluno->nome }}" readonly>
           </div>
@@ -386,14 +418,195 @@
 
     {{-- Histórico de atendimentos --}}
     <hr class="block-divider">
-    <div class="section-header">
-      <div class="section-icon">📋</div>
-      <h2 class="section-title">Histórico de atendimentos</h2>
+    <div class="section-header" style="justify-content:space-between; flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="section-icon">📋</div>
+        <h2 class="section-title">Histórico de atendimentos</h2>
+      </div>
+      <a href="{{ route('atendimento.form', $aluno->id) }}"
+         style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700;
+                color:#163C25; background:#EAF3EE; border:1px solid #CFE1D6; border-radius:8px;
+                padding:8px 14px; text-decoration:none; transition:.2s;">
+        <i class="bi bi-clipboard2-plus"></i> Lançar atendimento
+      </a>
     </div>
 
-    <div style="background:#f3f3f3; border-radius:12px; padding:12px; border:1px solid #ececec;">
-      <div style="opacity:.7; padding:8px;">Sem atendimentos cadastrados.</div>
-    </div>
+    @forelse($atendimentos as $at)
+      {{-- Card resumo --}}
+      <div style="background:#fff; border:1px solid #CFE1D6; border-radius:12px; padding:14px 16px; margin-bottom:10px;
+                  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+
+        {{-- Infos principais --}}
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex:1; min-width:0;">
+
+          {{-- Data --}}
+          <div style="background:#EAF3EE; border:1px solid #CFE1D6; border-radius:8px; padding:6px 12px; text-align:center; flex-shrink:0;">
+            <div style="font-size:18px; font-weight:900; color:#163C25; line-height:1;">
+              {{ \Carbon\Carbon::parse($at->data_atendimento)->format('d') }}
+            </div>
+            <div style="font-size:10px; font-weight:700; color:#6b7280; text-transform:uppercase;">
+              {{ \Carbon\Carbon::parse($at->data_atendimento)->translatedFormat('M Y') }}
+            </div>
+          </div>
+
+          {{-- Profissional + presença --}}
+          <div style="min-width:0;">
+            <div style="font-size:13px; font-weight:700; color:#163C25; margin-bottom:4px;">
+              <i class="bi bi-person-badge" style="margin-right:4px;"></i>
+              {{ $at->profissional?->nome ?? '—' }}
+            </div>
+            @if($at->faltou)
+              <span style="background:#fef2f2; border:1px solid #fca5a5; color:#b91c1c; border-radius:99px; font-size:11px; font-weight:700; padding:2px 10px;">
+                <i class="bi bi-x-circle-fill"></i> Faltou
+              </span>
+            @else
+              <span style="background:#f0fdf4; border:1px solid #86efac; color:#166534; border-radius:99px; font-size:11px; font-weight:700; padding:2px 10px;">
+                <i class="bi bi-check-circle-fill"></i> Presente
+              </span>
+            @endif
+          </div>
+
+          {{-- Prévia das observações --}}
+          @if($at->observacoes)
+            <div style="font-size:12px; color:#6b7280; flex:1; min-width:0; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
+              {{ $at->observacoes }}
+            </div>
+          @endif
+
+        </div>
+
+        {{-- Botão ver detalhes --}}
+        <button
+          type="button"
+          style="flex-shrink:0; display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+                 color:#163C25; background:#EAF3EE; border:1px solid #CFE1D6; border-radius:8px;
+                 padding:7px 14px; cursor:pointer; transition:.2s; white-space:nowrap;"
+          data-bs-toggle="modal"
+          data-bs-target="#modalAtendimento{{ $at->id }}"
+          onmouseover="this.style.background='#163C25';this.style.color='#fff';"
+          onmouseout="this.style.background='#EAF3EE';this.style.color='#163C25';"
+        >
+          <i class="bi bi-eye"></i> Ver detalhes
+        </button>
+      </div>
+
+      {{-- Modal de detalhes --}}
+      <div class="modal fade" id="modalAtendimento{{ $at->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content" style="border:none; border-radius:14px; overflow:hidden;">
+
+            {{-- Header --}}
+            <div class="modal-header" style="background:linear-gradient(135deg,#163C25,#2a6042); border:none; padding:18px 24px;">
+              <div>
+                <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,.6); text-transform:uppercase; letter-spacing:.08em; margin-bottom:2px;">
+                  Detalhes do atendimento
+                </div>
+                <h5 class="modal-title" style="color:#fff; font-weight:900; margin:0; font-size:16px;">
+                  {{ \Carbon\Carbon::parse($at->data_atendimento)->translatedFormat('d \d\e F \d\e Y') }}
+                </h5>
+              </div>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            {{-- Body --}}
+            <div class="modal-body" style="padding:24px; background:#f8faf9;">
+
+              {{-- Linha: profissional + presença --}}
+              <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;">
+                <div style="flex:1; background:#fff; border:1px solid #e5ede8; border-radius:10px; padding:14px 16px;">
+                  <div style="font-size:10px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px;">Profissional</div>
+                  <div style="font-size:14px; font-weight:700; color:#163C25;">
+                    <i class="bi bi-person-badge me-1"></i>{{ $at->profissional?->nome ?? '—' }}
+                  </div>
+                  @if($at->profissional?->profissao)
+                    <div style="font-size:12px; color:#6b7280; margin-top:2px;">{{ $at->profissional->profissao }}</div>
+                  @endif
+                </div>
+                <div style="background:#fff; border:1px solid #e5ede8; border-radius:10px; padding:14px 16px; min-width:140px; text-align:center;">
+                  <div style="font-size:10px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px;">Presença</div>
+                  @if($at->faltou)
+                    <span style="background:#fef2f2; border:1px solid #fca5a5; color:#b91c1c; border-radius:99px; font-size:12px; font-weight:700; padding:4px 14px;">
+                      <i class="bi bi-x-circle-fill"></i> Faltou
+                    </span>
+                  @else
+                    <span style="background:#f0fdf4; border:1px solid #86efac; color:#166534; border-radius:99px; font-size:12px; font-weight:700; padding:4px 14px;">
+                      <i class="bi bi-check-circle-fill"></i> Presente
+                    </span>
+                  @endif
+                </div>
+              </div>
+
+              {{-- Motivo da falta --}}
+              @if($at->faltou && $at->motivo_falta)
+                <div style="background:#fef2f2; border-left:3px solid #dc2626; border-radius:0 8px 8px 0; padding:10px 14px; margin-bottom:16px; font-size:13px; color:#7f1d1d;">
+                  <strong>Motivo da falta:</strong> {{ $at->motivo_falta }}
+                </div>
+              @endif
+
+              {{-- Atividades planejadas --}}
+              @if($at->atividades_planejadas)
+                <div style="background:#fff; border:1px solid #e5ede8; border-radius:10px; padding:14px 16px; margin-bottom:12px;">
+                  <div style="font-size:10px; font-weight:700; color:#163C25; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">
+                    <i class="bi bi-list-check me-1"></i> Atividades planejadas
+                  </div>
+                  <p style="margin:0; font-size:13px; color:#1f1f1f; white-space:pre-line; line-height:1.6;">{{ $at->atividades_planejadas }}</p>
+                </div>
+              @endif
+
+              {{-- Observações --}}
+              @if($at->observacoes)
+                <div style="background:#fff; border:1px solid #e5ede8; border-radius:10px; padding:14px 16px; margin-bottom:12px;">
+                  <div style="font-size:10px; font-weight:700; color:#163C25; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">
+                    <i class="bi bi-chat-square-text me-1"></i> Observações do profissional
+                  </div>
+                  <p style="margin:0; font-size:13px; color:#1f1f1f; white-space:pre-line; line-height:1.6;">{{ $at->observacoes }}</p>
+                </div>
+              @endif
+
+              {{-- Fichas --}}
+              @if($at->documentos->count() > 0)
+                <div style="background:#fff; border:1px solid #e5ede8; border-radius:10px; padding:14px 16px;">
+                  <div style="font-size:10px; font-weight:700; color:#163C25; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;">
+                    <i class="bi bi-paperclip me-1"></i> Fichas de atendimento ({{ $at->documentos->count() }})
+                  </div>
+                  <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    @foreach($at->documentos as $doc)
+                      <a href="{{ asset('storage/' . $doc->arquivo) }}" target="_blank"
+                         style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600;
+                                color:#163C25; background:#EAF3EE; border:1px solid #CFE1D6; border-radius:7px;
+                                padding:6px 12px; text-decoration:none;">
+                        @if(str_contains($doc->tipo_mime, 'pdf'))
+                          <i class="bi bi-file-earmark-pdf" style="color:#dc2626;"></i>
+                        @else
+                          <i class="bi bi-file-earmark-image" style="color:#2563eb;"></i>
+                        @endif
+                        {{ $doc->nome_original }}
+                      </a>
+                    @endforeach
+                  </div>
+                </div>
+              @endif
+
+            </div>
+
+            {{-- Footer --}}
+            <div class="modal-footer" style="background:#fff; border-top:1px solid #ececec; padding:14px 24px;">
+              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
+              <a href="{{ route('atendimento.edit', $at->id) }}" class="btn btn-sm"
+                 style="background:#163C25; color:#fff; font-weight:700;">
+                <i class="bi bi-pencil me-1"></i> Editar
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    @empty
+      <div style="background:#f3f3f3; border-radius:12px; padding:12px; border:1px solid #ececec;">
+        <div style="opacity:.7; padding:8px;">Sem atendimentos cadastrados.</div>
+      </div>
+    @endforelse
 
   </div>
 </div>
@@ -406,6 +619,46 @@
   document.getElementById('lightboxBackdrop').addEventListener('click', function (e) {
     if (e.target === this) this.classList.remove('open');
   });
+</script>
+@endif
+
+{{-- Modal de desligamento --}}
+@if($aluno->ativo)
+<div class="modal fade" id="modalDesligamento" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Desativar Aluno</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formDesligamento" action="{{ route('alunos.toggle', $aluno->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PATCH')
+        <div class="modal-body">
+          <p style="font-weight:600; margin-bottom:16px;">Aluno: {{ $aluno->nome }}</p>
+          <div class="mb-3">
+            <label class="form-label">Justificativa do desligamento <span style="color:red">*</span></label>
+            <textarea name="justificativa" class="form-control" rows="4" required
+              placeholder="Descreva o motivo do desligamento..."></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Documento assinado pelos pais (opcional)</label>
+            <input type="file" name="documento" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+            <small class="text-muted">PDF ou imagem • máx. 10MB</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Confirmar desligamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  function abrirModalDesligamento() {
+    new bootstrap.Modal(document.getElementById('modalDesligamento')).show();
+  }
 </script>
 @endif
 

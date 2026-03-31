@@ -9,6 +9,8 @@ use App\Models\ListaEspera;
 use App\Models\DocumentoAluno;
 use App\Models\Escola;
 use App\Models\OrigemEncaminhamento;
+use App\Models\Agendamento;
+use App\Models\RegistroAtendimento;
 
 
 class Aluno extends Model
@@ -22,6 +24,7 @@ class Aluno extends Model
         'celular',
         'foto',
         'ativo',
+        'justificativa_desligamento',
 
         'endereco',
         'numero',
@@ -81,5 +84,13 @@ class Aluno extends Model
 
     public function origemEncaminhamento(){
         return $this->belongsTo(OrigemEncaminhamento::class);
+    }
+
+    public function agendamentos(){
+        return $this->hasMany(Agendamento::class);
+    }
+
+    public function registrosAtendimento(){
+        return $this->hasMany(RegistroAtendimento::class)->orderByDesc('data_atendimento');
     }
 }

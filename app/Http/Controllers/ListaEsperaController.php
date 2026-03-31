@@ -11,7 +11,9 @@ class ListaEsperaController extends Controller
     public function filas()
     {
         $listas = ListaEspera::with(['alunos' => function ($q) {
-            $q->orderBy('lista_espera_aluno.data_entrada');
+            $q->where('alunos.ativo', true)
+              ->wherePivot('status', 'aguardando')
+              ->orderBy('lista_espera_aluno.data_entrada');
         }, 'profissionais'])->where('ativo', true)->get();
 
         return view('lista_espera.filas', compact('listas'));

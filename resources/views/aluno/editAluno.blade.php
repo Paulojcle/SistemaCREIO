@@ -22,7 +22,7 @@
       </div>
     @endif
 
-    <form action="{{ route('alunos.update', $aluno->id) }}" method="POST" enctype="multipart/form-data">
+    <form id="form-editar-aluno" action="{{ route('alunos.update', $aluno->id) }}" method="POST" enctype="multipart/form-data">
       @csrf
       @method('PUT')
 
@@ -454,12 +454,6 @@
         <ul id="listaDocumentos" class="lista-documentos"></ul>
       </div>
 
-      {{-- Botões --}}
-      <div class="mt-4 d-flex justify-content-end gap-2">
-        <a href="{{ route('alunos.show', $aluno->id) }}" class="btn btn-soft-secondary">Cancelar</a>
-        <button type="submit" class="btn btn-soft-primary">Salvar alterações</button>
-      </div>
-
     </form>
 
     {{-- Documentos já salvos (fora do form principal para evitar forms aninhados) --}}
@@ -522,6 +516,12 @@
       @empty
         <p class="doc-vazio">Nenhum documento anexado.</p>
       @endforelse
+    </div>
+
+    {{-- Botões --}}
+    <div class="mt-4 d-flex justify-content-end gap-2">
+      <a href="{{ route('alunos.show', $aluno->id) }}" class="btn btn-soft-secondary">Cancelar</a>
+      <button type="submit" form="form-editar-aluno" class="btn btn-soft-primary">Salvar alterações</button>
     </div>
 
     {{-- Histórico de atendimentos --}}

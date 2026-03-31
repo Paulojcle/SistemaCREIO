@@ -27,7 +27,7 @@
       <div class="user-dropdown" id="userDropdown" hidden>
         <a class="user-item" href="#">Minha conta</a>
 
-        <form method="POST" action="">
+        <form method="POST" action="{{ route('logout') }}">
           @csrf
           <button type="submit" class="user-item danger">
             Sair
@@ -84,9 +84,9 @@
         <details>
           <summary>📅 Atendimentos <span class="caret"></span></summary>
           <ul class="submenu">
-            <li><a href="{{ route('agendamento') }}">Agendamentos</a></li>
+            <li><a href="{{ route('agendamentos') }}">Agendamentos</a></li>
             <li><a href="{{ route('atendimento.lancar') }}">Lançar atendimento</a></li>
-            <li><a href="{{ route('listasEspera.filas') }}">Lista de espera</a></li>
+            <li><a href="{{ route('listasEspera.filas') }}">Filas de espera</a></li>
           </ul>
         </details>
       </li>

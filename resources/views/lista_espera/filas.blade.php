@@ -84,6 +84,38 @@
     color: #94a3b8;
     font-size: 0.9rem;
   }
+
+  .btn-agendar {
+    background: #16a34a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s;
+  }
+
+  .btn-agendar:hover {
+    background: #15803d;
+    color: #fff;
+  }
+
+  .btn-agendar-disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    cursor: not-allowed;
+  }
 </style>
 @endpush
 
@@ -148,9 +180,20 @@
                       </span>
                     </td>
                     <td style="text-align:right;">
-                      <a href="{{ route('alunos.show', $aluno->id) }}" class="btn-action btn-editar">
-                        Ver aluno
-                      </a>
+                      <div style="display:inline-flex; gap:6px; align-items:center;">
+                        <a href="{{ route('alunos.show', $aluno->id) }}" class="btn-action btn-editar">Ver aluno</a>
+                        @if($aluno->pivot->status === 'aguardando')
+                          <button type="button" class="btn-agendar"
+                            data-aluno-id="{{ $aluno->id }}"
+                            data-aluno-nome="{{ $aluno->nome }}"
+                            data-lista-id="{{ $lista->id }}"
+                            onclick="abrirModalAgendamento(this)">
+                            Agendar
+                          </button>
+                        @else
+                          <span class="btn-agendar-disabled">Agendar</span>
+                        @endif
+                      </div>
                     </td>
                   </tr>
                 @endforeach
@@ -168,5 +211,145 @@
 
   </div>
 </div>
+
+{{-- Modal de agendamento --}}
+<div class="modal fade" id="modalAgendamento" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Novo Agendamento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form action="{{ route('agendamentos.store') }}" method="POST">
+        @csrf
+        <input type="hidden" name="aluno_id" id="modal-aluno-id">
+
+        <div class="modal-body">
+
+          <p class="la-modal-aluno">
+            <i class="bi bi-person-fill me-1"></i>
+            <span id="modal-aluno-nome"></span>
+          </p>
+
+          <div class="mb-3">
+            <label class="form-label">Profissional</label>
+            <select name="profissional_id_aux" id="modal-profissional" class="form-select" required>
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Dia e Horário</label>
+            <select name="horarios_profissional_id" id="modal-horario" class="form-select" required>
+              <option value="">Selecione o profissional primeiro</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Lista de Espera</label>
+            <select name="lista_espera_id" id="modal-lista" class="form-select" required>
+              <option value="">Selecione o profissional primeiro</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Observações</label>
+            <textarea name="observacoes" id="modal-obs" class="form-control" rows="3"></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Agendar</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+@push('scripts')
+<script>
+  const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+  let todosProfissionais = [];
+  let todasListasEspera  = [];
+  let listaIdAtual       = null;
+
+  function abrirModalAgendamento(btn) {
+    const alunoId = btn.dataset.alunoId;
+    listaIdAtual  = parseInt(btn.dataset.listaId);
+    const nome    = btn.dataset.alunoNome;
+
+    document.getElementById('modal-aluno-id').value         = alunoId;
+    document.getElementById('modal-aluno-nome').textContent = nome;
+    document.getElementById('modal-profissional').innerHTML = '<option value="">Carregando...</option>';
+    document.getElementById('modal-horario').innerHTML      = '<option value="">Selecione o profissional primeiro</option>';
+    document.getElementById('modal-lista').innerHTML        = '<option value="">Selecione o profissional primeiro</option>';
+
+    fetch(`/agendamento/profissionais/${alunoId}`)
+      .then(r => r.json())
+      .then(({ profissionais, listasEspera }) => {
+        todosProfissionais = profissionais;
+        todasListasEspera  = listasEspera;
+
+        const profsFila = profissionais.filter(p => p.listas_ids.includes(listaIdAtual));
+
+        document.getElementById('modal-profissional').innerHTML = profsFila.length
+          ? '<option value="">Selecione...</option>' + profsFila.map(p => `<option value="${p.id}">${p.nome}</option>`).join('')
+          : '<option value="">Nenhum profissional disponível</option>';
+      })
+      .catch(() => {
+        document.getElementById('modal-profissional').innerHTML = '<option value="">Erro ao carregar</option>';
+      });
+
+    new bootstrap.Modal(document.getElementById('modalAgendamento')).show();
+  }
+
+  document.getElementById('modal-profissional').addEventListener('change', function () {
+    const profissionalId = parseInt(this.value);
+    const alunoId        = document.getElementById('modal-aluno-id').value;
+    const listaSelect    = document.getElementById('modal-lista');
+    const horarioSelect  = document.getElementById('modal-horario');
+
+    horarioSelect.innerHTML = '<option value="">Selecione o profissional primeiro</option>';
+    listaSelect.innerHTML   = '<option value="">Selecione...</option>';
+
+    if (!profissionalId) return;
+
+    const prof = todosProfissionais.find(p => p.id === profissionalId);
+    const listasFiltradas = prof
+      ? todasListasEspera.filter(l => prof.listas_ids.includes(l.id))
+      : [];
+
+    if (listasFiltradas.length) {
+      listaSelect.innerHTML = '<option value="">Selecione...</option>' +
+        listasFiltradas.map(l =>
+          `<option value="${l.id}" ${l.id === listaIdAtual ? 'selected' : ''}>${l.nome}</option>`
+        ).join('');
+    } else {
+      listaSelect.innerHTML = '<option value="">Nenhuma lista disponível</option>';
+    }
+
+    horarioSelect.innerHTML = '<option value="">Carregando...</option>';
+
+    fetch(`/agendamento/horarios?profissional_id=${profissionalId}&aluno_id=${alunoId}`)
+      .then(r => r.json())
+      .then(horarios => {
+        horarioSelect.innerHTML = horarios.length
+          ? '<option value="">Selecione...</option>' + horarios.map(h =>
+              `<option value="${h.id}">${diasSemana[h.dia_semana]} — ${h.hora_inicio.substring(0,5)} (${h.duracao_minutos} min)</option>`
+            ).join('')
+          : '<option value="">Nenhum horário disponível</option>';
+      })
+      .catch(() => {
+        horarioSelect.innerHTML = '<option value="">Erro ao buscar horários</option>';
+      });
+  });
+</script>
+@endpush
 
 @endsection
