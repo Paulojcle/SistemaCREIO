@@ -1,3 +1,5 @@
+@use ('Illuminate\Support\Facades\Storage')
+
 <nav class="sidebar" aria-label="Menu lateral">
   <div class="menu-box">
 
@@ -8,13 +10,16 @@
     @auth
     <div class="sidebar-user">
       <button class="user-btn" type="button" id="userMenuBtn" aria-expanded="false">
+      @if(auth()->user()->foto)
+        <img src="{{ Storage::url(auth()->user()->foto) }}" class="user-avatar" style="object-fit:cover;border-radius:50%; width:36px; height:36px" alt="">
+      @else
         <div class="user-avatar">
-          {{ strtoupper(substr(auth()->user()->name ?? 'U',0,1)) }}
+          {{ strtoupper(substr(auth()->user()->firstName ?? 'U', 0, 1)) }}
         </div>
-
+      @endif
         <div class="user-meta">
           <div class="user-name">
-            {{ auth()->user()->name ?? 'Usuário' }}
+            {{ (auth()->user()->firstName ?? '') . ' ' . (auth()->user()->lastName ?? '') }}
           </div>
           <div class="user-email">
             {{ auth()->user()->email }}
@@ -25,7 +30,7 @@
       </button>
 
       <div class="user-dropdown" id="userDropdown" hidden>
-        <a class="user-item" href="#">Minha conta</a>
+        <a class="user-item" href="{{ route('conta.index') }}">Minha conta</a>
 
         <form method="POST" action="{{ route('logout') }}">
           @csrf

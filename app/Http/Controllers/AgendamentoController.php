@@ -36,7 +36,7 @@ class AgendamentoController extends Controller
 
         $agendamentos = $query->get()->sortBy('horarioProfissional.hora_inicio');
 
-        return view('atendimento.index', compact('agendamentos', 'profissionais', 'alunos', 'dataSelecionada', 'alunoId'));
+        return view('atendimento.index', compact('agendamentos', 'profissionais', 'alunos', 'dataSelecionada', 'alunoId', 'profissionalId'));
     }
 
     /**
@@ -94,14 +94,6 @@ class AgendamentoController extends Controller
 
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
@@ -117,7 +109,7 @@ class AgendamentoController extends Controller
 
         $listasEspera = $agendamento->aluno->listasEspera()->where('ativo', true)->get();
 
-        return view('atendimento.editAtendimento', compact('agendamento', 'profissionais', 'listasEspera'));
+        return view('atendimento.editAgendamento', compact('agendamento', 'profissionais', 'listasEspera'));
     }
 
     public function profissionaisPorAluno(string $alunoId)

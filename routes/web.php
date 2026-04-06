@@ -14,11 +14,18 @@ use App\Http\Controllers\AlunoController;
 use App\Http\Controllers\DocumentoAlunoController;
 use App\Http\Controllers\HorarioProfissionalController;
 use App\Http\Controllers\AgendamentoController;
+use App\Http\Controllers\DashboardController; 
+use App\Http\Controllers\ContaController;
 use App\Http\Controllers\RegistroAtendimentoController;
 
 Route::middleware('auth')->group(function(){
 
-    Route::view('/index', 'index')->name('index');
+    //Rotas para administração de conta
+    Route::get('/conta', [ContaController::class, 'index'])->name('conta.index');
+    Route::put('/conta/perfil', [ContaController::class, 'updatePerfil'])->name('conta.perfil');
+    Route::put('/conta/senha', [ContaController::class, 'updateSenha'])->name('conta.senha');
+
+    Route::get('/index', [DashboardController::class, 'index'])->name('index');
 
     //Rotas view escola
     Route::resource('escolas', EscolaController::class);
@@ -58,31 +65,32 @@ Route::middleware('auth')->group(function(){
 
 
     //Rotas de atendimento
-    Route::get('/agendamento',                [AgendamentoController::class, 'index'])->name('agendamentos');
+    Route::get('/agendamento',[AgendamentoController::class, 'index'])->name('agendamentos');
+    Route::get('/agendamento/criar', [AgendamentoController::class, 'create'])->name('agendamentos.create');
 
-    Route::get('/atendimentoLancar',                    [RegistroAtendimentoController::class, 'index'])->name('atendimento.lancar');
+    Route::get('/atendimentoLancar', [RegistroAtendimentoController::class, 'index'])->name('atendimento.lancar');
 
-    Route::get('/atendimento/{alunoId}/novo',           [RegistroAtendimentoController::class, 'create'])->name('atendimento.form');
+    Route::get('/atendimento/{alunoId}/novo',[RegistroAtendimentoController::class, 'create'])->name('atendimento.form');
 
-    Route::post('/atendimento',                         [RegistroAtendimentoController::class, 'store'])->name('atendimento.store');
+    Route::post('/atendimento',[RegistroAtendimentoController::class, 'store'])->name('atendimento.store');
 
-    Route::get('/atendimento/{id}/editar',              [RegistroAtendimentoController::class, 'edit'])->name('atendimento.edit');
+    Route::get('/atendimento/{id}/editar',[RegistroAtendimentoController::class, 'edit'])->name('atendimento.edit');
 
-    Route::put('/atendimento/{id}',                     [RegistroAtendimentoController::class, 'update'])->name('atendimento.update');
-    
-    Route::delete('/atendimento/documento/{id}',        [RegistroAtendimentoController::class, 'destroyDocumento'])->name('atendimento.documento.destroy');
+    Route::put('/atendimento/{id}',[RegistroAtendimentoController::class, 'update'])->name('atendimento.update');
 
-    Route::post('/agendamento',               [AgendamentoController::class, 'store'])->name('agendamentos.store');
+    Route::delete('/atendimento/documento/{id}',[RegistroAtendimentoController::class, 'destroyDocumento'])->name('atendimento.documento.destroy');
 
-    Route::get('/agendamento/horarios',                  [AgendamentoController::class, 'horarios'])->name('agendamentos.horarios');
+    Route::post('/agendamento',[AgendamentoController::class, 'store'])->name('agendamentos.store');
 
-    Route::get('/agendamento/profissionais/{alunoId}',   [AgendamentoController::class, 'profissionaisPorAluno'])->name('agendamentos.profissionais');
+    Route::get('/agendamento/horarios',[AgendamentoController::class, 'horarios'])->name('agendamentos.horarios');
 
-    Route::get('/agendamento/{id}/editar',    [AgendamentoController::class, 'edit'])->name('agendamentos.edit');
+    Route::get('/agendamento/profissionais/{alunoId}',[AgendamentoController::class, 'profissionaisPorAluno'])->name('agendamentos.profissionais');
 
-    Route::put('/agendamento/{id}',           [AgendamentoController::class, 'update'])->name('agendamentos.update');
+    Route::get('/agendamento/{id}/editar',[AgendamentoController::class, 'edit'])->name('agendamentos.edit');
 
-    Route::delete('/agendamento/{id}',        [AgendamentoController::class, 'destroy'])->name('agendamentos.destroy');
+    Route::put('/agendamento/{id}',[AgendamentoController::class, 'update'])->name('agendamentos.update');
+
+    Route::delete('/agendamento/{id}',[AgendamentoController::class, 'destroy'])->name('agendamentos.destroy');
 
 
     // Rotas para controle dos diagnósticos, deficiências e as origens de encaminhamento

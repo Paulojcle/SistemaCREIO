@@ -8,10 +8,6 @@
 @section('content')
 
 @php
-  $dataSelecionada = request()->query('data', today()->toDateString());
-  $profissionalId  = request()->query('profissional_id');
-  $alunoId         = request()->query('aluno_id');
-
   $dataCarbon   = \Carbon\Carbon::parse($dataSelecionada);
   $inicioSemana = $dataCarbon->copy()->startOfWeek(\Carbon\Carbon::MONDAY);
   $fimSemana    = $inicioSemana->copy()->endOfWeek(\Carbon\Carbon::SUNDAY);
@@ -55,9 +51,6 @@
     . ', ' . $dataCarbon->day
     . ' de ' . $meses[(int)$dataCarbon->month]
     . ' de ' . $dataCarbon->year;
-
-  $profissionais = isset($profissionais) ? $profissionais : collect();
-  $agendamentos  = isset($agendamentos)  ? $agendamentos  : collect();
 @endphp
 
 <div class="aluno-page">
@@ -67,8 +60,8 @@
   {{-- ===== CABEÇALHO ===== --}}
   <div class="ag-header">
     <h1 class="ag-title">Agendamentos</h1>
-    <a href="{{ route('atendimento.lancar') }}" class="ag-btn-novo">
-      <i class="bi bi-plus-lg"></i> Novo agendamento
+    <a href="{{ route('agendamentos.create') }}" class="ag-btn-novo">
+      <i class="bi bi-plus-lg"></i> Novo agendamento 
     </a>
   </div>
 

@@ -13,7 +13,7 @@
       <div class="la-search-icon">
         <i class="bi bi-calendar-plus"></i>
       </div>
-      <form class="la-search-form" action="{{ route('atendimento.lancar') }}" method="GET">
+      <form class="la-search-form" action="{{ route('agendamentos.create') }}" method="GET">
         <input class="la-input" type="text" name="q" value="{{ request('q') }}" placeholder="Nome do aluno">
         <button class="la-btn" type="submit">Buscar</button>
       </form>

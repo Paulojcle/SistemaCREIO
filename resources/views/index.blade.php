@@ -18,34 +18,34 @@
     <!-- ===== MÉTRICAS PRINCIPAIS ===== -->
     <div class="metrics">
 
-        <a href="#" class="metric-card link-card">
+        <a href="{{ route('alunos.index') }}" class="metric-card link-card">
             <div class="metric-icon">👨‍🎓</div>
             <div>
-                <h2>128</h2>
+                <h2>{{ $totalAlunos }}</h2>
                 <span>Alunos Matriculados</span>
             </div>
         </a>
 
-        <a href="#" class="metric-card link-card">
+        <a href="{{ route('escolas.index') }}" class="metric-card link-card">
             <div class="metric-icon">🏫</div>
             <div>
-                <h2>12</h2>
+                <h2>{{ $totalEscolas }}</h2>
                 <span>Escolas Atendidas</span>
             </div>
         </a>
 
-        <a href="#" class="metric-card link-card">
+        <a href="{{ route ('profissionais.index') }}" class="metric-card link-card">
             <div class="metric-icon">👩‍⚕️</div>
             <div>
-                <h2>8</h2>
+                <h2>{{ $totalProfissionais }}</h2>
                 <span>Profissionais</span>
             </div>
         </a>
 
-        <a href="#" class="metric-card highlight link-card">
+        <a href="{{ route('agendamentos') }}" class="metric-card highlight link-card">
             <div class="metric-icon">📅</div>
             <div>
-                <h2>24</h2>
+                <h2>{{ $atendimentosHoje }}</h2>
                 <span>Atendimentos Hoje</span>
             </div>
         </a>
@@ -58,54 +58,54 @@
 
         <div class="mini-cards">
 
-            <a href="#" class="mini-card link-mini">
-                <strong>32</strong>
-                <span>Deficiência Intelectual</span>
-            </a>
 
-            <a href="#" class="mini-card link-mini">
-                <strong>18</strong>
-                <span>Deficiência Física</span>
-            </a>
+            @forelse($deficiencias as $def)
 
-            <a href="#" class="mini-card link-mini">
-                <strong>9</strong>
-                <span>Deficiência Auditiva</span>
-            </a>
+                <a href="" class="mini-card link-mini">
+                    <strong>
+                        {{ $def->alunos_count }}
+                    </strong>
 
-            <a href="#" class="mini-card link-mini">
-                <strong>6</strong>
-                <span>Deficiência Visual</span>
-            </a>
+                    <span>
+                        {{ $def->nome }}
+                    </span>
+                </a>
+
+                @empty
+                    <p>Nenhuma deficiência cadastrada</p>
+
+            @endforelse
+
+            
 
         </div>
     </div>
 
     <!-- ===== SEÇÃO TRANSTORNOS ===== -->
     <div class="dashboard-section">
-        <h3>Alunos por Tipo de Transtorno</h3>
+        <h3>Alunos por Tipo de Diagnósticos</h3>
 
         <div class="mini-cards">
 
-            <a href="#" class="mini-card link-mini">
-                <strong>41</strong>
-                <span>TEA</span>
-            </a>
+            @forelse($diagnosticos as $dia)
 
-            <a href="#" class="mini-card link-mini">
-                <strong>22</strong>
-                <span>TDAH</span>
-            </a>
+                <a href="" class="mini-card link-mini">
+                        <strong>
+                            {{ $dia->alunos_count }}
+                        </strong>
 
-            <a href="#" class="mini-card link-mini">
-                <strong>7</strong>
-                <span>TOD</span>
-            </a>
+                        <span>
+                            {{ $dia->nome }}
+                        </span>
+                </a>
 
-            <a href="#" class="mini-card link-mini">
-                <strong>5</strong>
-                <span>Dislexia</span>
-            </a>
+                @empty
+                <p>nenhum diagnóstico cadastrado</p>
+
+            @endforelse
+
+            
+
 
         </div>
     </div>
