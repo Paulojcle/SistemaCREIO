@@ -94,6 +94,20 @@
         @endforeach
       </select>
 
+      @if($alunoId || $profissionalId)
+        @if($alunoId)
+          <a href="{{ route('agendamentos.relatorio', ['alunoId' => $alunoId, 'profissional_id' => $profissionalId]) }}"
+             target="_blank" class="ag-btn-novo" style="margin-left:auto;">
+            <i class="bi bi-printer"></i> Imprimir horários
+          </a>
+        @else
+          <a href="{{ route('agendamentos.relatorio.profissional', $profissionalId) }}"
+             target="_blank" class="ag-btn-novo" style="margin-left:auto;">
+            <i class="bi bi-printer"></i> Imprimir horários
+          </a>
+        @endif
+      @endif
+
     </form>
   </div>
 

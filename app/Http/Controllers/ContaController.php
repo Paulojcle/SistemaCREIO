@@ -33,8 +33,11 @@ class ContaController extends Controller
 
 
         if ($request->hasFile('foto')) {
+            $request->file(('foto'), $validated);
             $path = $request->file('foto')->store('fotos/usuarios', 'public');
             $validated['foto'] = $path;
+        } else{
+            unset($validated['foto']);
         }
 
         $user = \App\Models\User::find(Auth::id());

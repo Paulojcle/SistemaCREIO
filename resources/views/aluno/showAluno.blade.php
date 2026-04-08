@@ -19,6 +19,9 @@
         <a href="{{ route('alunos.edit', $aluno->id) }}" class="btn btn-soft-primary" style="font-size:13px; padding:8px 16px;">
           Editar
         </a>
+        <a href="{{ route('alunos.ficha', $aluno->id) }}" target="_blank" class="btn btn-soft-secondary" style="font-size:13px; padding:8px 16px;">
+          Imprimir Ficha
+        </a>
         @if($aluno->ativo)
           <button type="button" class="btn btn-soft-danger" style="font-size:13px; padding:8px 16px;"
             onclick="abrirModalDesligamento({{ $aluno->id }}, '{{ addslashes($aluno->nome) }}')">

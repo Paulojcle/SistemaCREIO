@@ -18,6 +18,62 @@
             <div class="alert-success">{{ session('success') }}</div>
         @endif
 
+        <form method="GET" action="{{ route('alunos.index') }}" class="mb-4">
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
+
+                <div style="flex:1; min-width:160px;">
+                    <label style="font-size:0.8rem; color:#64748b;">Nome do aluno</label>
+                    <input type="text" name="nome" value="{{ request('nome') }}"
+                        class="form-control form-control-sm" placeholder="Buscar por nome...">
+                </div>
+
+                <div style="min-width:130px;">
+                    <label style="font-size:0.8rem; color:#64748b;">Status</label>
+                    <select name="ativo" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        <option value="1" {{ request('ativo') === '1' ? 'selected' : '' }}>Ativo</option>
+                        <option value="0" {{ request('ativo') === '0' ? 'selected' : '' }}>Inativo</option>
+                    </select>
+                </div>
+
+                <div style="min-width:160px;">
+                    <label style="font-size:0.8rem; color:#64748b;">Escola</label>
+                    <select name="escola_id" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        @foreach($escolas as $escola)
+                            <option value="{{ $escola->id }}" {{ request('escola_id') == $escola->id ? 'selected' : '' }}>
+                                {{ $escola->nome }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div style="flex:1; min-width:160px;">
+                    <label style="font-size:0.8rem; color:#64748b;">Nome do pai/mãe</label>
+                    <input type="text" name="filiacao" value="{{ request('filiacao') }}"
+                        class="form-control form-control-sm" placeholder="Buscar por filiação...">
+                </div>
+
+                <div style="min-width:180px;">
+                    <label style="font-size:0.8rem; color:#64748b;">Tipo de deficiência</label>
+                    <select name="deficiencia_id" class="form-select form-select-sm">
+                        <option value="">Todas</option>
+                        @foreach($deficiencias as $def)
+                            <option value="{{ $def->id }}" {{ request('deficiencia_id') == $def->id ? 'selected' : '' }}>
+                                {{ $def->nome }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div style="display:flex; gap:8px;">
+                    <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                    <a href="{{ route('alunos.index') }}" class="btn btn-outline-secondary btn-sm">Limpar</a>
+                </div>
+
+            </div>
+        </form>
+
         <div class="table-responsive">
             <table class="custom-table">
                 <thead>

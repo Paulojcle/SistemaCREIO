@@ -31,8 +31,7 @@ Route::middleware('auth')->group(function(){
     Route::resource('escolas', EscolaController::class);
 
     //Rota Exclusão de Documento de Escola
-    Route::delete('/documentos/{id}', [DocumentosEscolaController::class, 'destroy'])
-        ->name('documentos.destroy');
+    Route::delete('/documentos/{id}', [DocumentosEscolaController::class, 'destroy'])->name('documentos.destroy');
 
     //Rotas aluno
     Route::resource('alunos', AlunoController::class)->except(['destroy']);
@@ -40,6 +39,8 @@ Route::middleware('auth')->group(function(){
     Route::patch('alunos/{aluno}/toggle', [AlunoController::class, 'toggle'])->name('alunos.toggle');
 
     Route::delete('/alunos/documentos/{id}', [DocumentoAlunoController::class, 'destroy'])->name('alunos.documentos.destroy');
+
+    Route::get('/alunos/{aluno}/ficha', [AlunoController::class, 'ficha'])->name('alunos.ficha');
 
     //Rotas view profissional
     Route::delete('/profissionais/documentos/{id}', [DocumentosProfissionalController::class,'destroy'])->name('profissionais.documentos.destroy');
@@ -89,6 +90,9 @@ Route::middleware('auth')->group(function(){
     Route::get('/agendamento/{id}/editar',[AgendamentoController::class, 'edit'])->name('agendamentos.edit');
 
     Route::put('/agendamento/{id}',[AgendamentoController::class, 'update'])->name('agendamentos.update');
+
+    Route::get('/agendamento/relatorio/{alunoId}', [AgendamentoController::class, 'relatorioAluno'])->name('agendamentos.relatorio');
+    Route::get('/agendamento/relatorio-profissional/{profissionalId}', [AgendamentoController::class, 'relatorioProfissional'])->name('agendamentos.relatorio.profissional');
 
     Route::delete('/agendamento/{id}',[AgendamentoController::class, 'destroy'])->name('agendamentos.destroy');
 

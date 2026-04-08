@@ -15,12 +15,41 @@ class AlunoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $escolas = Escola::orderBy('nome')->get();
+        $deficiencias = Deficiencia::orderBy('nome')->get();
 
-        $alunos = Aluno::with('escola', 'listasEspera')->get();
-        
-        return view('aluno.index', compact('alunos'));
+        $query = Aluno::with('escola', 'listasEspera', 'deficiencias');
+
+        if ($request->filled('nome')) {
+            $query->where('nome', 'like', '%' . $request->nome . '%');
+        }
+
+        if ($request->filled('ativo') && $request->ativo !== '') {
+            $query->where('ativo', $request->ativo);
+        }
+
+        if ($request->filled('escola_id')) {
+            $query->where('escola_id', $request->escola_id);
+        }
+
+        if ($request->filled('filiacao')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('filiacao1', 'like', '%' . $request->filiacao . '%')
+                  ->orWhere('filiacao2', 'like', '%' . $request->filiacao . '%');
+            });
+        }
+
+        if ($request->filled('deficiencia_id')) {
+            $query->whereHas('deficiencias', function ($q) use ($request) {
+                $q->where('deficiencias.id', $request->deficiencia_id);
+            });
+        }
+
+        $alunos = $query->get();
+
+        return view('aluno.index', compact('alunos', 'escolas', 'deficiencias'));
     }
 
     /**
@@ -148,6 +177,12 @@ class AlunoController extends Controller
 
         return redirect()->route('alunos.show', $aluno->id)->with('success', "Aluno {$aluno->nome} atualizado com sucesso!");
     }
+
+    public function ficha(Aluno $aluno){
+        $aluno->load( 'escola', 'deficiencias', 'diagnosticos', 'origemEncaminhamento');
+        return view ('aluno.fichaAluno', compact('aluno'));
+    }
+
 
     /**
      * Ativa ou desativa o aluno.

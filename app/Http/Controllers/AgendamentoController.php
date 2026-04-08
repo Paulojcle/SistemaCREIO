@@ -19,10 +19,23 @@ class AgendamentoController extends Controller
         $dataSelecionada = $request->query('data', today()->toDateString());
         $profissionalId  = $request->query('profissional_id');
         $alunoId         = $request->query('aluno_id');
-        $diaSemana       = \Carbon\Carbon::parse($dataSelecionada)->dayOfWeek; // 0=dom … 6=sab
+        $diaSemana       = \Carbon\Carbon::parse($dataSelecionada)->dayOfWeek;
 
-        $profissionais = Profissional::where('ativo', true)->orderBy('nome')->get();
-        $alunos        = Aluno::whereHas('agendamentos')->orderBy('nome')->get(['id', 'nome']);
+        $profissionais = Profissional::where('ativo', true)
+            ->when($alunoId, fn($q) => $q->whereHas('horarios.agendamentos', fn($q2) =>
+                $q2->where('aluno_id', $alunoId)->where('status', 'agendado')
+            ))
+            ->orderBy('nome')->get();
+
+        $alunos = Aluno::whereHas('agendamentos', function ($q) use ($profissionalId) {
+                $q->where('status', 'agendado');
+                if ($profissionalId) {
+                    $q->whereHas('horarioProfissional', fn($q2) =>
+                        $q2->where('profissional_id', $profissionalId)
+                    );
+                }
+            })
+            ->orderBy('nome')->get(['id', 'nome']);
 
         $query = Agendamento::with(['aluno', 'listaEspera', 'horarioProfissional.profissional'])
             ->where('status', 'agendado')
@@ -190,6 +203,32 @@ class AgendamentoController extends Controller
 
         return redirect()->route('agendamentos')
             ->with('success', 'Agendamento removido com sucesso!');
+    }
+
+    public function relatorioAluno(Request $request, string $alunoId){
+        $aluno = Aluno::findOrFail($alunoId);
+        $profissionalId = $request->query('profissional_id');
+
+        $agendamentos = Agendamento::with(['horarioProfissional.profissional'])->where('aluno_id', $alunoId)->where('status', 'agendado')->when($profissionalId, function ($q) use ($profissionalId){
+            $q->whereHas('horarioProfissional', fn($q2) => $q2->where('profissional_id', $profissionalId));
+        })->get()->sortBy('horarioProfissional.dia_semana');
+
+        $profissional = $profissionalId ? \App\Models\Profissional::find($profissionalId) : null;
+
+        return view('atendimento.relatorioAluno', compact('aluno', 'agendamentos', 'profissional'));
+    }
+
+    public function relatorioProfissional(string $profissionalId)
+    {
+        $profissional = Profissional::findOrFail($profissionalId);
+
+        $agendamentos = Agendamento::with(['aluno', 'horarioProfissional'])
+            ->where('status', 'agendado')
+            ->whereHas('horarioProfissional', fn($q) => $q->where('profissional_id', $profissionalId))
+            ->get()
+            ->sortBy('horarioProfissional.dia_semana');
+
+        return view('atendimento.relatorioProfissional', compact('profissional', 'agendamentos'));
     }
 
     public function horarios(Request $request)
