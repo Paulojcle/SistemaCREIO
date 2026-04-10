@@ -118,7 +118,17 @@ class AlunoController extends Controller
     public function show(Aluno $aluno)
     {
         $aluno->load('escola', 'origemEncaminhamento', 'deficiencias', 'diagnosticos', 'listasEspera', 'documentosAluno');
-        $atendimentos = $aluno->registrosAtendimento()->with('documentos', 'profissional')->get();
+        $query = $aluno->registrosAtendimento()->with('documentos', 'profissional');
+
+        if (request()->filled('data_inicio')) {
+            $query->where('data_atendimento', '>=', request('data_inicio'));
+        }
+
+        if (request()->filled('data_fim')) {
+            $query->where('data_atendimento', '<=', request('data_fim'));
+        }
+
+        $atendimentos = $query->get();
         return view('aluno.showAluno', compact('aluno', 'atendimentos'));
     }
 

@@ -434,6 +434,21 @@
       </a>
     </div>
 
+    <form method="GET" action="{{ route('alunos.show', $aluno->id) }}" style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px;">
+      <div>
+        <label style="font-size:12px; font-weight:700; color:#64748b; display:block; margin-bottom:4px;">Data início</label>
+        <input type="date" name="data_inicio" value="{{ request('data_inicio') }}" style="border:1px solid #CFE1D6; border-radius:8px; padding:7px 10px; font-size:13px;">
+      </div>
+      <div>
+        <label style="font-size:12px; font-weight:700; color:#64748b; display:block; margin-bottom:4px;">Data fim</label>
+        <input type="date" name="data_fim" value="{{ request('data_fim') }}" style="border:1px solid #CFE1D6; border-radius:8px; padding:7px 10px; font-size:13px;">
+      </div>
+      <button type="submit" style="background:#163C25; color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:700; cursor:pointer;">Filtrar</button>
+      @if(request()->hasAny(['data_inicio','data_fim']))
+        <a href="{{ route('alunos.show', $aluno->id) }}" style="font-size:13px; color:#6b7280; align-self:center;">Limpar filtro</a>
+      @endif
+    </form>
+
     @forelse($atendimentos as $at)
       {{-- Card resumo --}}
       <div style="background:#fff; border:1px solid #CFE1D6; border-radius:12px; padding:14px 16px; margin-bottom:10px;

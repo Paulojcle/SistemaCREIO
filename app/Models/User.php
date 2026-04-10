@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Perfil;
 
 class User extends Authenticatable
 {
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'foto',
+        'ativo',
     ];
 
     /**
@@ -46,5 +48,26 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function perfis()
+    {
+        return $this->belongsToMany(Perfil::class, 'perfil_user');
+    }
+
+    public function profissional()
+    {
+        return $this->hasOne(\App\Models\Profissional::class, 'user_id');
+    }
+
+    public function temPermissao(string $permissao): bool
+    {
+        return once(function () {
+            return $this->perfis()
+                ->with('permissoes')
+                ->get()
+                ->flatMap(fn($p) => $p->permissoes->pluck('nome'))
+                ->unique();
+        })->contains($permissao);
     }
 }

@@ -15,6 +15,11 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credenciais)) {
+            if (!Auth::user()->ativo) {
+                Auth::logout();
+                return back()->with('erro', 'Sua conta está desativada.')->withInput();
+            }
+
             $request->session()->regenerate();
             return redirect()->intended('index');
         }

@@ -44,14 +44,16 @@
 
     <ul class="menu" id="menuLateral">
 
-      <!-- DASHBOARD -->
       <li>
         <a class="menu-link dashboard-link" href="{{ route('index') }}">
           🏠 Dashboard
         </a>
       </li>
 
-      <!-- ALUNOS -->
+      @auth
+      @php $user = auth()->user(); @endphp
+
+      @if($user->temPermissao('alunos.gerenciar'))
       <li>
         <details>
           <summary>👩‍🎓 Alunos <span class="caret"></span></summary>
@@ -61,8 +63,9 @@
           </ul>
         </details>
       </li>
+      @endif
 
-      <!-- PROFISSIONAIS -->
+      @if($user->temPermissao('profissionais.gerenciar'))
       <li>
         <details>
           <summary>🧑‍⚕️ Profissionais <span class="caret"></span></summary>
@@ -72,8 +75,9 @@
           </ul>
         </details>
       </li>
+      @endif
 
-      <!-- ESCOLAS -->
+      @if($user->temPermissao('escolas.gerenciar'))
       <li>
         <details>
           <summary>🏫 Escolas <span class="caret"></span></summary>
@@ -83,47 +87,77 @@
           </ul>
         </details>
       </li>
+      @endif
 
-      <!-- ATENDIMENTOS -->
+      @php
+        $temAtendimento = $user->temPermissao('agendamentos.visualizar')
+                       || $user->temPermissao('agendamentos.gerenciar')
+                       || $user->temPermissao('atendimentos.gerenciar')
+                       || $user->temPermissao('listas_espera.gerenciar');
+      @endphp
+      @if($temAtendimento)
       <li>
         <details>
           <summary>📅 Atendimentos <span class="caret"></span></summary>
           <ul class="submenu">
+            @if($user->temPermissao('agendamentos.visualizar') || $user->temPermissao('agendamentos.gerenciar'))
             <li><a href="{{ route('agendamentos') }}">Agendamentos</a></li>
+            @endif
+            @if($user->temPermissao('atendimentos.gerenciar'))
             <li><a href="{{ route('atendimento.lancar') }}">Lançar atendimento</a></li>
+            @endif
+            @if($user->temPermissao('listas_espera.gerenciar'))
             <li><a href="{{ route('listasEspera.filas') }}">Filas de espera</a></li>
+            @endif
           </ul>
         </details>
       </li>
+      @endif
 
-      <!-- RELATÓRIOS -->
+      @if($user->temPermissao('relatorios.visualizar'))
       <li>
         <details>
           <summary>📊 Relatórios <span class="caret"></span></summary>
           <ul class="submenu">
-            <li><a href="#">Relatório de atendimentos</a></li>
-            <li><a href="#">Relatório por aluno</a></li>
-            <li><a href="#">Relatório por profissional</a></li>
-            <li><a href="#">Exportar dados (PDF/Excel)</a></li>
+            <li><a href="{{ route('relatorios.atendimentos') }}">Relatório de atendimentos</a></li>
+            {{--<li><a href="#">Relatório por profissional</a></li>--}}
           </ul>
         </details>
       </li>
+      @endif
 
-      <!-- ADMINISTRAÇÃO -->
+      @php
+        $temAdmin = $user->temPermissao('configuracoes.gerenciar')
+                 || $user->temPermissao('listas_espera.gerenciar')
+                 || $user->temPermissao('profissionais.gerenciar')
+                 || $user->temPermissao('usuarios.gerenciar');
+      @endphp
+      @if($temAdmin)
       <li>
         <details>
           <summary>⚙️ Administração <span class="caret"></span></summary>
           <ul class="submenu">
+            @if($user->temPermissao('configuracoes.gerenciar'))
             <li><a href="{{ route('diagnosticos.index') }}">Tipos de Diagnóstico</a></li>
             <li><a href="{{ route('deficiencias.index') }}">Tipos de Deficiência</a></li>
             <li><a href="{{ route('origensEncaminhamento.index') }}">Origens de Encaminhamento</a></li>
+            @endif
+            @if($user->temPermissao('listas_espera.gerenciar'))
             <li><a href="{{ route('listasEspera.index') }}">Cadastrar listas de Espera</a></li>
+            @endif
+            @if($user->temPermissao('profissionais.gerenciar'))
             <li><a href="{{ route('horarios.index') }}">Cadastrar horários de atendimento</a></li>
-            <li><a href="#">Usuários</a></li>
-            <li><a href="#">Perfis e Permissões</a></li>
+            @endif
+            @if($user->temPermissao('usuarios.gerenciar'))
+            <li><a href="{{ route('usuarios.index') }}">Usuários</a></li>
+            <li><a href="{{ route('perfis.index') }}">Perfis e Permissões</a></li>
+            @endif
           </ul>
         </details>
       </li>
+      @endif
+
+      @endauth
 
     </ul>
 

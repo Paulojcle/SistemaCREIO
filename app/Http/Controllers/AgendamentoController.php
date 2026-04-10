@@ -16,10 +16,14 @@ class AgendamentoController extends Controller
      */
     public function index(Request $request)
     {
-        $dataSelecionada = $request->query('data', today()->toDateString());
-        $profissionalId  = $request->query('profissional_id');
-        $alunoId         = $request->query('aluno_id');
-        $diaSemana       = \Carbon\Carbon::parse($dataSelecionada)->dayOfWeek;
+        $dataSelecionada  = $request->query('data', today()->toDateString());
+        $alunoId          = $request->query('aluno_id');
+        $diaSemana        = \Carbon\Carbon::parse($dataSelecionada)->dayOfWeek;
+
+        $profissionalVinculado = auth()->user()->profissional;
+        $profissionalId = $profissionalVinculado
+            ? $profissionalVinculado->id
+            : $request->query('profissional_id');
 
         $profissionais = Profissional::where('ativo', true)
             ->when($alunoId, fn($q) => $q->whereHas('horarios.agendamentos', fn($q2) =>
@@ -49,7 +53,9 @@ class AgendamentoController extends Controller
 
         $agendamentos = $query->get()->sortBy('horarioProfissional.hora_inicio');
 
-        return view('atendimento.index', compact('agendamentos', 'profissionais', 'alunos', 'dataSelecionada', 'alunoId', 'profissionalId'));
+        $profissionalFixo = $profissionalVinculado !== null;
+
+        return view('atendimento.index', compact('agendamentos', 'profissionais', 'alunos', 'dataSelecionada', 'alunoId', 'profissionalId', 'profissionalFixo'));
     }
 
     /**

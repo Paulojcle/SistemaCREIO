@@ -12,8 +12,14 @@ class RegistroAtendimentoController extends Controller
     public function index(Request $request)
     {
         $q = $request->input('q');
+        $profissionalVinculado = auth()->user()->profissional;
 
         $alunos = Aluno::where('ativo', true)
+            ->when($profissionalVinculado, fn($query) => $query->whereHas('agendamentos', fn($q2) =>
+                $q2->whereHas('horarioProfissional', fn($q3) =>
+                    $q3->where('profissional_id', $profissionalVinculado->id)
+                )->where('status', 'agendado')
+            ))
             ->when($q, fn($query) => $query->where('nome', 'like', "%$q%"))
             ->orderBy('nome')
             ->with('escola')
@@ -24,8 +30,12 @@ class RegistroAtendimentoController extends Controller
 
     public function create($alunoId)
     {
-        $aluno        = Aluno::findOrFail($alunoId);
-        $profissionais = Profissional::where('ativo', true)->orderBy('nome')->get();
+        $aluno = Aluno::findOrFail($alunoId);
+        $profissionalVinculado = auth()->user()->profissional;
+
+        $profissionais = $profissionalVinculado
+            ? collect([$profissionalVinculado])
+            : Profissional::where('ativo', true)->orderBy('nome')->get();
 
         return view('atendimento.formAtendimento', compact('aluno', 'profissionais'));
     }

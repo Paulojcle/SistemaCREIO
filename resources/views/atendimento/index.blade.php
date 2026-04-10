@@ -60,9 +60,11 @@
   {{-- ===== CABEÇALHO ===== --}}
   <div class="ag-header">
     <h1 class="ag-title">Agendamentos</h1>
-    <a href="{{ route('agendamentos.create') }}" class="ag-btn-novo">
-      <i class="bi bi-plus-lg"></i> Novo agendamento 
-    </a>
+    @if(!$profissionalFixo && auth()->user()->temPermissao('agendamentos.gerenciar'))
+      <a href="{{ route('agendamentos.create') }}" class="ag-btn-novo">
+        <i class="bi bi-plus-lg"></i> Novo agendamento
+      </a>
+    @endif
   </div>
 
   {{-- ===== FILTROS ===== --}}
@@ -70,17 +72,24 @@
     <form method="GET" action="{{ route('agendamentos') }}" class="ag-filter-form">
       <input type="hidden" name="data" value="{{ $dataSelecionada }}">
 
-      <label class="ag-filter-label" for="profissional_id">
-        <i class="bi bi-person-badge"></i> Profissional
-      </label>
-      <select name="profissional_id" id="profissional_id" class="ag-filter-select" onchange="this.form.submit()">
-        <option value="">Todos</option>
-        @foreach($profissionais as $prof)
-          <option value="{{ $prof->id }}" {{ $profissionalId == $prof->id ? 'selected' : '' }}>
-            {{ $prof->nome }}
-          </option>
-        @endforeach
-      </select>
+      @if($profissionalFixo)
+        <input type="hidden" name="profissional_id" value="{{ $profissionalId }}">
+        <span class="ag-filter-label">
+          <i class="bi bi-person-badge"></i> {{ $profissionais->firstWhere('id', $profissionalId)?->nome }}
+        </span>
+      @else
+        <label class="ag-filter-label" for="profissional_id">
+          <i class="bi bi-person-badge"></i> Profissional
+        </label>
+        <select name="profissional_id" id="profissional_id" class="ag-filter-select" onchange="this.form.submit()">
+          <option value="">Todos</option>
+          @foreach($profissionais as $prof)
+            <option value="{{ $prof->id }}" {{ $profissionalId == $prof->id ? 'selected' : '' }}>
+              {{ $prof->nome }}
+            </option>
+          @endforeach
+        </select>
+      @endif
 
       <label class="ag-filter-label" for="aluno_id" style="margin-left:12px;">
         <i class="bi bi-person"></i> Aluno
@@ -163,9 +172,11 @@
       <div class="ag-vazio">
         <i class="bi bi-calendar-x ag-vazio-icon"></i>
         <p>Nenhum agendamento para este dia.</p>
-        <a href="{{ route('atendimento.lancar') }}" class="ag-btn-novo ag-btn-novo--outline">
-          <i class="bi bi-plus-lg"></i> Criar agendamento
-        </a>
+        @if(!$profissionalFixo && auth()->user()->temPermissao('agendamentos.gerenciar'))
+          <a href="{{ route('atendimento.lancar') }}" class="ag-btn-novo ag-btn-novo--outline">
+            <i class="bi bi-plus-lg"></i> Criar agendamento
+          </a>
+        @endif
       </div>
     @else
       <div class="ag-cards">
@@ -201,20 +212,24 @@
             <div class="ag-card-right">
               <span class="ag-status {{ $statusClass }}">{{ $statusLabel }}</span>
               <div class="ag-card-acoes">
-                <a href="{{ route('alunos.show', $ag->aluno_id) }}" class="ag-icon-btn" title="Ver aluno">
-                  <i class="bi bi-eye"></i>
-                </a>
-                <a href="{{ route('agendamentos.edit', $ag->id) }}" class="ag-icon-btn" title="Editar agendamento">
-                  <i class="bi bi-pencil"></i>
-                </a>
-                <form action="{{ route('agendamentos.destroy', $ag->id) }}" method="POST"
-                      onsubmit="return confirm('Remover este agendamento?')" style="display:inline">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="ag-icon-btn ag-icon-btn--danger" title="Remover agendamento">
-                    <i class="bi bi-x-lg"></i>
-                  </button>
-                </form>
+                @if(auth()->user()->temPermissao('alunos.gerenciar'))
+                  <a href="{{ route('alunos.show', $ag->aluno_id) }}" class="ag-icon-btn" title="Ver aluno">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                @endif
+                @if(!$profissionalFixo && auth()->user()->temPermissao('agendamentos.gerenciar'))
+                  <a href="{{ route('agendamentos.edit', $ag->id) }}" class="ag-icon-btn" title="Editar agendamento">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <form action="{{ route('agendamentos.destroy', $ag->id) }}" method="POST"
+                        onsubmit="return confirm('Remover este agendamento?')" style="display:inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="ag-icon-btn ag-icon-btn--danger" title="Remover agendamento">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </form>
+                @endif
               </div>
             </div>
           </div>

@@ -21,6 +21,7 @@ class Profissional extends Model
     'profissao',
     'especializacao',
     'ativo',
+    'user_id',
   ];
 
   protected $casts = [
@@ -44,5 +45,9 @@ class Profissional extends Model
 
   public function horarios(){
     return $this->hasMany(HorarioProfissional::class);
+  }
+
+  public function usuario(){
+    return $this->belongsTo(User::class, 'user_id');
   }
 }

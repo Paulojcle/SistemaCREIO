@@ -9,11 +9,6 @@
   --muted: #6b6b6b;
 }
 
-.sidebar,
-.sidebar * {
-  color: #fff !important;
-}
-
 .la-page{
   padding: 26px 28px;
 }
