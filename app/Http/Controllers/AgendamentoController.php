@@ -8,9 +8,11 @@ use Illuminate\Http\Request;
 use App\Models\Aluno;
 use App\Models\HorarioProfissional;
 use App\Models\ListaEspera;
+use App\Traits\RegistraLog;
 
 class AgendamentoController extends Controller
 {
+    use RegistraLog;
     /**
      * Display a listing of the resource.
      */
@@ -101,6 +103,8 @@ class AgendamentoController extends Controller
         $validated['status'] = 'agendado';
 
         Agendamento::create($validated);
+        $nomeAluno = Aluno::find($validated['aluno_id'])->nome;
+        $this->registrarLog('criou', 'Agendamento', "Criou o agendamento para o aluno {$nomeAluno}");
 
         // Remove o aluno da fila de espera (muda status de 'aguardando' para 'agendado')
         Aluno::find($validated['aluno_id'])
@@ -187,6 +191,7 @@ class AgendamentoController extends Controller
         }
 
         $agendamento->update($validated);
+        $this->registrarLog('editou', 'Agendamento', "Editou o agendamento do aluno {$agendamento->aluno->nome}");
 
         return redirect()->route('agendamentos')
             ->with('success', 'Agendamento atualizado com sucesso!');
@@ -206,6 +211,7 @@ class AgendamentoController extends Controller
             ->updateExistingPivot($agendamento->lista_espera_id, ['status' => 'aguardando']);
 
         $agendamento->delete();
+        $this->registrarLog('excluiu', 'Agendamento', "Removeu o agendamento do aluno {$agendamento->aluno->nome}");
 
         return redirect()->route('agendamentos')
             ->with('success', 'Agendamento removido com sucesso!');

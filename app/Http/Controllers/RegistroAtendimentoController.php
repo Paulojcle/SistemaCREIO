@@ -6,9 +6,11 @@ use App\Models\Aluno;
 use App\Models\Profissional;
 use App\Models\RegistroAtendimento;
 use Illuminate\Http\Request;
+use App\Traits\RegistraLog;
 
 class RegistroAtendimentoController extends Controller
 {
+    use RegistraLog;
     public function index(Request $request)
     {
         $q = $request->input('q');
@@ -77,6 +79,9 @@ class RegistroAtendimentoController extends Controller
             }
         }
 
+        $nomeAluno = Aluno::find($registro->aluno_id)->nome;
+        $this->registrarLog('criou', 'Atendimento', "Lançou atendimento para o aluno {$nomeAluno}");
+
         return redirect()
             ->route('alunos.show', $registro->aluno_id)
             ->with('success', 'Atendimento lançado com sucesso!');
@@ -127,6 +132,8 @@ class RegistroAtendimentoController extends Controller
             }
         }
 
+        $this->registrarLog('editou', 'Atendimento', "Editou atendimento do aluno {$registro->aluno->nome}");
+
         return redirect()
             ->route('alunos.show', $registro->aluno_id)
             ->with('success', 'Atendimento atualizado com sucesso!');
@@ -135,7 +142,14 @@ class RegistroAtendimentoController extends Controller
     public function destroyDocumento($id)
     {
         $doc = \App\Models\DocumentoAtendimento::findOrFail($id);
+
+        abort_unless(\App\Models\RegistroAtendimento::where('id', $doc->registro_atendimento_id)->exists(), 403);
+
         \Illuminate\Support\Facades\Storage::disk('public')->delete($doc->arquivo);
+
+        $nomeAluno = $doc->registroAtendimento->aluno->nome ?? 'desconhecido';
+        $this->registrarLog('excluiu', 'Documento Atendimento', "Removeu o documento {$doc->nome_original} do aluno {$nomeAluno}");
+
         $doc->delete();
 
         return back()->with('success', 'Documento removido.');

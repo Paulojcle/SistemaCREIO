@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Profissional;
 use Illuminate\Http\Request;
+use App\Traits\RegistraLog;
 
 class ProfissionalController extends Controller
 {
+    use RegistraLog;
+
     /**
      * Display a listing of the resource.
      */
@@ -29,6 +32,21 @@ class ProfissionalController extends Controller
      */
     public function store(Request $request)
     {
+
+        $request->validate([        
+            'nome'            => 'required|string|      max:255',
+            'data_nascimento' => 'nullable|dat      e',
+            'rg'              => 'nullable|string|      max:20',
+            'cpf'             => 'nullable|string|max:14',
+            'celular'         => 'nullable|string|max:20',
+            'numero_registro' => 'nullable|string|max:30',
+            'profissao'       => 'nullable|string|max:255',
+            'especializacao'  => 'nullable|string|max:255',
+            'documentos'      => 'nullable|ar       ray',
+            'documentos.*'    => 'file|mimes:pdf,       jpg,jpeg,png|max:10240',
+        ]);
+
+
         $profissional = Profissional::create([
             'nome'             => $request->nome,
             'data_nascimento'  => $request->data_nascimento,
@@ -39,6 +57,7 @@ class ProfissionalController extends Controller
             'profissao'        => $request->profissao,
             'especializacao'   => $request->especializacao,
         ]);
+        $this->registrarLog('criou', 'Profissional', "Cadastrou o profissional {$profissional->nome}");
 
         // Salva as formações
         if ($request->filled('formacoes')) {
@@ -103,6 +122,8 @@ class ProfissionalController extends Controller
             'numero_registro' => 'nullable|string|max:30',
             'profissao'       => 'nullable|string|max:255',
             'especializacao'  => 'nullable|string|max:255',
+            'documentos'      => 'nullable|array',
+            'documentos.*'    => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
         
         $profissional->update([
@@ -115,6 +136,8 @@ class ProfissionalController extends Controller
             'profissao'        => $request->profissao,
             'especializacao'   => $request->especializacao,
         ]);
+
+        $this->registrarLog('editou', 'Profissional', "Editou o profissional {$profissional->nome}");
 
         // Atualiza formações: remove as antigas e recria
         if ($request->filled('formacoes')) {
@@ -154,6 +177,12 @@ class ProfissionalController extends Controller
         $profissional->update([
             'ativo' => !$profissional->ativo,
         ]);
+
+        if ($profissional->ativo){
+            $this->registrarLog('reativou', 'Profissional', "Reativou o profissional {$profissional->nome}");
+        }else{
+            $this->registrarLog('desativou', 'Profissional', "Desativou o profissional {$profissional->nome}");
+        }
 
         $status = $profissional->ativo ? 'reativado' : 'desligado';
 

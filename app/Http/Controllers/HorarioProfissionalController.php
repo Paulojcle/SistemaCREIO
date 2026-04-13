@@ -7,9 +7,11 @@ use App\Models\HorarioProfissional;
 use App\Models\Profissional;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Traits\RegistraLog;
 
 class HorarioProfissionalController extends Controller
 {
+    use RegistraLog;
     public function index()
     {
         $profissionais = Profissional::where('ativo', true)->orderBy('nome')->get();
@@ -53,6 +55,8 @@ class HorarioProfissionalController extends Controller
             'duracao_minutos' => $request->duracao_minutos,
         ]);
 
+        $this->registrarLog('criou', 'Horário', "Cadastrou horário para o profissional {$profissional->nome}");
+
         return redirect()->route('horarios.show', $profissional->id)
             ->with('success', 'Horário cadastrado com sucesso!');
     }
@@ -60,6 +64,8 @@ class HorarioProfissionalController extends Controller
     public function destroy(Profissional $profissional, HorarioProfissional $horario)
     {
         $horario->delete();
+
+        $this->registrarLog('excluiu', 'Horário', "Removeu horário do profissional {$profissional->nome}");
 
         return redirect()->route('horarios.show', $profissional->id)
             ->with('success', 'Horário removido com sucesso!');
@@ -92,6 +98,8 @@ class HorarioProfissionalController extends Controller
             'hora_inicio'     => $request->hora_inicio,
             'duracao_minutos' => $request->duracao_minutos,
         ]);
+
+        $this->registrarLog('editou', 'Horário', "Editou horário do profissional {$profissional->nome}");
 
         return redirect()->route('horarios.show', $profissional->id)
             ->with('success', 'Horário atualizado com sucesso!');

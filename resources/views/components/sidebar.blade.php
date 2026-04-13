@@ -151,6 +151,7 @@
             @if($user->temPermissao('usuarios.gerenciar'))
             <li><a href="{{ route('usuarios.index') }}">Usuários</a></li>
             <li><a href="{{ route('perfis.index') }}">Perfis e Permissões</a></li>
+            <li><a href="{{ route('logs.index') }}">Controle de atividade</a></li>
             @endif
           </ul>
         </details>
@@ -158,6 +159,12 @@
       @endif
 
       @endauth
+
+      <li>
+        <a class="menu-link" href="{{ route('sobre') }}">
+          ℹ️ Sobre
+        </a>
+      </li>
 
     </ul>
 

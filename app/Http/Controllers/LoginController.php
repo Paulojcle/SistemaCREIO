@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\RegistraLog;
 
 class LoginController extends Controller
 {
+    use RegistraLog;
     public function auth(Request $request)
     {
         $credenciais = $request->validate([
@@ -21,6 +23,7 @@ class LoginController extends Controller
             }
 
             $request->session()->regenerate();
+            $this->registrarLog('login', 'Sistema', "Realizou login");
             return redirect()->intended('index');
         }
 
@@ -29,6 +32,8 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        $this->registrarLog('logout', 'Sistema', "Realizou logout");
+
         Auth::logout();
 
         $request->session()->invalidate();

@@ -16,20 +16,27 @@ use App\Http\Controllers\HorarioProfissionalController;
 use App\Http\Controllers\AgendamentoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ContaController;
+use App\Http\Controllers\LogAtividadeController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\RegistroAtendimentoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UserController;
 
-
 Route::middleware('auth')->group(function () {
 
+    //Controle de atividades da conta
+    Route::get('/logs', [LogAtividadeController::class, 'index'])->name('logs.index');
+
+
+    //Rotas para configuração da conta
     Route::get('/conta', [ContaController::class, 'index'])->name('conta.index');
     Route::put('/conta/perfil', [ContaController::class, 'updatePerfil'])->name('conta.perfil');
     Route::put('/conta/senha', [ContaController::class, 'updateSenha'])->name('conta.senha');
 
     Route::get('/index', [DashboardController::class, 'index'])->name('index');
+    Route::get('/sobre', fn() => view('sobre'))->name('sobre');
 
+    //Confirmar as permissões dos usuários logados
     Route::middleware('permissao:usuarios.gerenciar')->group(function () {
         Route::resource('usuarios', UserController::class);
         Route::resource('perfis', PerfilController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['perfis' => 'perfil']);
@@ -105,7 +112,7 @@ Route::middleware('auth')->group(function () {
 
 Route::view('/login', 'auth.login')->name('login.form');
 
-Route::post('/auth', [LoginController::class, 'auth'])->name('login.auth');
+Route::post('/auth', [LoginController::class, 'auth'])->middleware('throttle:5,1')->name('login.auth');
 
 Route::get('/', fn () => redirect()->route('login.form'));
 

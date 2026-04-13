@@ -9,9 +9,12 @@ use App\Models\ListaEspera;
 use App\Models\Escola;
 use App\Models\OrigemEncaminhamento;
 use Illuminate\Http\Request;
+use App\Traits\RegistraLog;
 
 class AlunoController extends Controller
 {
+    use RegistraLog;
+
     /**
      * Display a listing of the resource.
      */
@@ -19,6 +22,7 @@ class AlunoController extends Controller
     {
         $escolas = Escola::orderBy('nome')->get();
         $deficiencias = Deficiencia::orderBy('nome')->get();
+        $diagnosticos = Diagnostico::orderBy('nome')->get();
 
         $query = Aluno::with('escola', 'listasEspera', 'deficiencias');
 
@@ -47,9 +51,15 @@ class AlunoController extends Controller
             });
         }
 
+        if($request->filled('diagnostico_id')){
+            $query->whereHas('diagnosticos', function ($q) use ($request) {
+                $q->where('diagnostico.id', $request->diagnostico_id);
+            });
+        }
+
         $alunos = $query->get();
 
-        return view('aluno.index', compact('alunos', 'escolas', 'deficiencias'));
+        return view('aluno.index', compact('alunos', 'escolas', 'deficiencias', 'diagnosticos'));
     }
 
     /**
@@ -75,6 +85,9 @@ class AlunoController extends Controller
             'nome'            => 'required|string|max:100',
             'data_nascimento' => 'required|date',
             'sexo'            => 'required|in:M,F',
+            'fot'             => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'documentos'      => 'nullable|array',
+            'documentos.*'    => 'file|mimes:pdf,jpg, jpeg, png|max:10240',     
         ], [
             'nome.required'            => 'O nome do aluno é obrigatório.',
             'data_nascimento.required' => 'A data de nascimento é obrigatória.',
@@ -85,6 +98,8 @@ class AlunoController extends Controller
         $data['possui_laudo'] = $request->boolean('possui_laudo');
 
         $aluno = Aluno::create($data);
+        $this->registrarLog('criou', 'Aluno', "Cadastrou o aluno {$aluno->nome}");
+
         if($request->hasFile('foto')){
             $caminho = $request->file('foto')->store('fotos/alunos', 'public');
             $aluno->update(['foto' => $caminho]);
@@ -153,6 +168,13 @@ class AlunoController extends Controller
      */
     public function update(Request $request, Aluno $aluno)
     {
+
+        $request->validate([
+            'foto'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'documentos'   => 'nullable|array',
+            'documentos.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+        
         $data = $request->except(['deficiencias', 'diagnosticos', 'listasEspera', 'documentos', '_token', '_method']);
         $data['possui_laudo'] = $request->boolean('possui_laudo');
 
@@ -163,6 +185,7 @@ class AlunoController extends Controller
         }
 
         $aluno->update($data);
+        $this->registrarLog('editou', 'Aluno', "Editou o aluno {$aluno->nome}");
 
         $aluno->deficiencias()->sync($request->deficiencias ?? []);
         $aluno->diagnosticos()->sync($request->diagnosticos ?? []);
@@ -212,6 +235,9 @@ class AlunoController extends Controller
                 'justificativa_desligamento' => $request->justificativa,
             ]);
 
+            $this->registrarLog('desativou', 'Aluno', "Desativou o aluno {$aluno->nome}");
+
+
             if ($request->hasFile('documento')) {
                 $arquivo = $request->file('documento');
                 $caminho = $arquivo->store('documentos/alunos', 'public');
@@ -226,6 +252,11 @@ class AlunoController extends Controller
         }
 
         $aluno->update(['ativo' => true, 'justificativa_desligamento' => null]);
+
+        $this->registrarLog('reativou', 'Aluno', "Reativou o aluno {$aluno->nome}");
+
         return redirect()->route('alunos.index')->with('success', "Aluno {$aluno->nome} reativado com sucesso!");
+
+        
     }
 }

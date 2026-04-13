@@ -61,7 +61,7 @@
 
             @forelse($deficiencias as $def)
 
-                <a href="" class="mini-card link-mini">
+                <a href="{{ route('alunos.index', ['deficiencia_id' => $def->id]) }}" class="mini-card link-mini">
                     <strong>
                         {{ $def->alunos_count }}
                     </strong>
@@ -81,7 +81,7 @@
         </div>
     </div>
 
-    <!-- ===== SEÇÃO TRANSTORNOS ===== -->
+    <!-- ===== SEÇÃO DIAGNÓSTICOS ===== -->
     <div class="dashboard-section">
         <h3>Alunos por Tipo de Diagnósticos</h3>
 
@@ -89,7 +89,7 @@
 
             @forelse($diagnosticos as $dia)
 
-                <a href="" class="mini-card link-mini">
+                <a href="{{ route('alunos.index', ['diagnostico_id' => $dia->id]) }}" class="mini-card link-mini">
                         <strong>
                             {{ $dia->alunos_count }}
                         </strong>

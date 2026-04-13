@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Perfil;
 use App\Models\Permissao;
 use Illuminate\Http\Request;
+use App\Traits\RegistraLog;
 
 class PerfilController extends Controller
 {
+    use RegistraLog;
     public function index()
     {
         $perfis = Perfil::with('permissoes')->get();
@@ -25,6 +27,8 @@ class PerfilController extends Controller
         $perfil = Perfil::create($request->only('nome', 'descricao'));
         $perfil->permissoes()->sync($request->input('permissoes', []));
 
+        $this->registrarLog('criou', 'Perfil', "Cadastrou o perfil {$perfil->nome}");
+
         return redirect()->route('perfis.index')->with('success', 'Perfil cadastrado com sucesso');
     }
 
@@ -40,11 +44,15 @@ class PerfilController extends Controller
         $perfil->permissoes()->sync($request->input('permissoes', []));
 
 
+        $this->registrarLog('editou', 'Perfil', "Editou o perfil {$perfil->nome}");
+
         return redirect()->route('perfis.index')->with('success', 'Perfil atualizado com sucesso');
     }
 
     public function destroy(Perfil $perfil)
     {
+        $this->registrarLog('excluiu', 'Perfil', "Excluiu o perfil {$perfil->nome}");
+
         $perfil->delete();
         return redirect()->route('perfis.index')->with('success', 'Perfil excluído com sucesso');
     }

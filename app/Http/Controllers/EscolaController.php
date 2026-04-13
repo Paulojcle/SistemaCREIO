@@ -6,9 +6,11 @@ use App\Models\Escola;
 use App\Models\DocumentoEscola;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\RegistraLog;
 
 class EscolaController extends Controller
 {
+    use RegistraLog;
 
     public function create()
     {
@@ -17,6 +19,19 @@ class EscolaController extends Controller
 
     public function store(Request $request)
     {
+
+        $request->validate([
+            'nome'         => 'required|string|max:255',
+            'cnpj'         => 'nullable|string|max:20',
+            'endereco'     => 'nullable|string|max:255',
+            'numero'       => 'nullable|string|max:20',
+            'bairro'       => 'nullable|string|max:100',
+            'cidade'       => 'nullable|string|max:100',
+            'cep'          => 'nullable|string|max:20',
+            'documentos'   => 'nullable|array',
+            'documentos.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+
 
         $escola = Escola::create([
             'nome'     => $request->nome,
@@ -43,6 +58,8 @@ class EscolaController extends Controller
                 ]);
             }
         }
+
+        $this->registrarLog('criou', 'Escola', "Cadastrou a escola {$escola->nome}");
 
         return redirect()->route('escolas.index')->with('success', 'Escola cadastrada com sucesso!');
     }
@@ -76,7 +93,8 @@ class EscolaController extends Controller
             'bairro'        => 'nullable|string|max:100',
             'cidade'        => 'nullable|string|max:100',
             'cep'           => 'nullable|string|max:20',
-            'documentos.*'  => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'documentos'    => 'nullable|array',
+            'documentos.*'  => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         $escola->update($request->only([
@@ -105,6 +123,8 @@ class EscolaController extends Controller
             }
         }
 
+        $this->registrarLog('editou', 'Escola', "Editou a escola {$escola->nome}");
+
         return redirect()->route('escolas.show', $escola->id)->with('success', 'Escola atualizada com sucesso!');
     }
 
@@ -114,6 +134,8 @@ class EscolaController extends Controller
             Storage::disk('public')->delete($documento->arquivo);
             $documento->delete();
         }
+
+        $this->registrarLog('excluiu', 'Escola', "Excluiu a escola {$escola->nome}");
 
         $escola->delete();
 

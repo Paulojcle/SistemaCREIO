@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Deficiencia;
 use Illuminate\Http\Request;
+use App\Traits\RegistraLog;
 
 class DeficienciaController extends Controller
 {
+    use RegistraLog;
     public function index()
     {
         $deficiencias = Deficiencia::all();
@@ -15,9 +17,16 @@ class DeficienciaController extends Controller
 
     public function store(Request $request)
     {
-        Deficiencia::create([
+
+        $request->validate([
+            'nome'         => 'required|string|max:100',
+        ]);
+
+        $deficiencia = Deficiencia::create([
             'nome' => $request->nome,
         ]);
+
+        $this->registrarLog('criou', 'Deficiência', "Cadastrou o tipo de deficiência {$deficiencia->nome}");
 
         return redirect()->route('deficiencias.index')->with('success', 'Tipo de deficiência cadastrado com sucesso!');
     }
@@ -30,11 +39,15 @@ class DeficienciaController extends Controller
 
         $deficiencia->update($request->only(['nome']));
 
+        $this->registrarLog('editou', 'Deficiência', "Editou o tipo de deficiência {$deficiencia->nome}");
+
         return redirect()->route('deficiencias.index')->with('success', 'Tipo de deficiência atualizado com sucesso!');
     }
 
     public function destroy(Deficiencia $deficiencia)
     {
+        $this->registrarLog('excluiu', 'Deficiência', "Excluiu o tipo de deficiência {$deficiencia->nome}");
+
         $deficiencia->delete();
         return redirect()->route('deficiencias.index')->with('success', 'Tipo de deficiência excluído com sucesso!');
     }

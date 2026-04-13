@@ -49,7 +49,7 @@
               </td>
               <td style="text-align:right;">
                 <button class="btn-action btn-editar"
-                  onclick="abrirModalEditar({{ $perfil->id }}, '{{ addslashes($perfil->nome) }}', '{{ addslashes($perfil->descricao) }}', {!! json_encode($perfil->permissoes->pluck('id')) !!})">
+                  onclick="abrirModalEditar({{ $perfil->id }}, '{{ addslashes(e($perfil->nome)) }}', '{{ addslashes(e($perfil->descricao)) }}', {{ Js::from($perfil->permissoes->pluck('id')) }})">
                   Editar
                 </button>
                 <button class="btn-action btn-excluir"

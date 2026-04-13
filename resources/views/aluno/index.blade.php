@@ -66,6 +66,18 @@
                     </select>
                 </div>
 
+                <div style="min-width:180px;">
+                    <label style="font-size:0.8rem; color:#64748b;">Tipo de diagnóstico</label>
+                    <select name="diagnostico_id" class="form-select form-select-sm">
+                        <option value="">Todos</option>
+                        @foreach($diagnosticos as $diag)
+                            <option value="{{ $diag->id }}" {{ request('diagnostico_id') == $diag->id ? 'selected' : '' }}>
+                                {{ $diag->nome }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div style="display:flex; gap:8px;">
                     <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
                     <a href="{{ route('alunos.index') }}" class="btn btn-outline-secondary btn-sm">Limpar</a>

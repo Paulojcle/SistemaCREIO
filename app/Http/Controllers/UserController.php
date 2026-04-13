@@ -7,9 +7,11 @@ use App\Models\User;
 use App\Models\Perfil;
 use App\Models\Profissional;
 use Illuminate\Support\Facades\Hash;
+use App\Traits\RegistraLog;
 
 class UserController extends Controller
 {
+    use RegistraLog;
     /**
      * Display a listing of the resource.
      */
@@ -38,7 +40,7 @@ class UserController extends Controller
             'firstName' => 'required|string|max:50',
             'lastName'  => 'required|string|max:50',
             'email'     => 'required|email|unique:users,email',
-            'password'  => 'required|string|min:6|confirmed',
+            'password'  => ['required', 'string', 'min:8', 'confirmed', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[@$!%*#?&]/'],
             'perfis'    => 'required|array',
 
         ]);
@@ -56,6 +58,8 @@ class UserController extends Controller
         if ($request->filled('profissional_id')) {
             Profissional::where('id', $request->profissional_id)->update(['user_id' => $usuario->id]);
         }
+
+        $this->registrarLog('criou', 'Usuário', "Cadastrou o usuário {$usuario->firstName} {$usuario->lastName}");
 
         return redirect()->route('usuarios.index')->with('success', "Usuário $usuario->firstName cadastrado com sucesso");
     }
@@ -93,7 +97,7 @@ class UserController extends Controller
             'firstName' => 'required|string|max:50',
             'lastName'  => 'required|string|max:50',
             'email'     => 'required|email|unique:users,email,' . $usuario->id,
-            'password'  => 'nullable|string|min:6|confirmed',
+            'password'  => ['nullable', 'string', 'min:8', 'confirmed', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[@$!%*#?&]/'],
             'perfis'    => 'required|array',
         ]);
 
@@ -115,6 +119,8 @@ class UserController extends Controller
             Profissional::where('id', $request->profissional_id)->update(['user_id' => $usuario->id]);
         }
 
+        $this->registrarLog('editou', 'Usuário', "Editou o usuário {$usuario->firstName} {$usuario->lastName}");
+
         return redirect()->route('usuarios.index')->with('success', "Usuário $usuario->firstName atualizado com sucesso");
     }
 
@@ -125,6 +131,8 @@ class UserController extends Controller
     {
         $usuario = User::findOrFail($id);
         $usuario->update(['ativo' => false]);
+        $this->registrarLog('desativou', 'Usuário', "Desativou o usuário {$usuario->firstName} {$usuario->lastName}");
+
         return redirect()->route('usuarios.index')->with('success', "Usuário $usuario->firstName desativado com sucesso");
     }
 }

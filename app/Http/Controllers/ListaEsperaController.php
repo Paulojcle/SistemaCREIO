@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\ListaEspera;
 use App\Models\Profissional;
 use Illuminate\Http\Request;
+use App\Traits\RegistraLog;
 
 class ListaEsperaController extends Controller
 {
+    use RegistraLog;
     public function filas()
     {
         $listas = ListaEspera::with(['alunos' => function ($q) {
@@ -35,11 +37,18 @@ class ListaEsperaController extends Controller
      */
     public function store(Request $request)
     {
+
+        $request->validate([
+            'nome'        => 'required|string|max:100',
+        ]);
+
         $lista = ListaEspera::create([
             'nome' => $request->nome,
         ]);
 
         $lista->profissionais()->sync($request->profissionais ?? []);
+
+        $this->registrarLog('criou', 'Lista de Espera', "Cadastrou a lista de espera {$lista->nome}");
 
         return redirect()->route('listasEspera.index')->with('success', 'Lista de espera cadastrada com sucesso');
     }
@@ -50,8 +59,10 @@ class ListaEsperaController extends Controller
             'ativo' => !$lista->ativo,
         ]);
 
-        $status = $lista->ativo ? 'reativada' : 'desligada';
+        $acao = $lista->ativo ? 'reativou' : 'desativou';
+        $this->registrarLog($acao, 'Lista de Espera', ucfirst($acao) . " a lista de espera {$lista->nome}");
 
+        $status = $lista->ativo ? 'reativada' : 'desligada';
         return redirect()->route('listasEspera.index')->with('success', "lista {$status} com sucesso");
     }
 
@@ -70,6 +81,8 @@ class ListaEsperaController extends Controller
         ]);
 
         $lista->profissionais()->sync($request->profissionais ?? []);
+
+        $this->registrarLog('editou', 'Lista de Espera', "Editou a lista de espera {$lista->nome}");
 
         return redirect()->route('listasEspera.index')->with('success', "lista de espera {$lista->nome} atualizada com sucesso");
  
