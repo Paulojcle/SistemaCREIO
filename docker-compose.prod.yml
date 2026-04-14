@@ -1,0 +1,45 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: creio_app
+    restart: always
+    networks:
+      - creio_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: creio_nginx
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - creio_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: creio_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - creio_mysql_data:/var/lib/mysql
+    networks:
+      - creio_network
+
+networks:
+  creio_network:
+    driver: bridge
+
+volumes:
+  creio_mysql_data:
