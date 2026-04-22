@@ -4,7 +4,7 @@
   <div class="menu-box">
 
     <div class="divLogo">
-      <img src="{{ asset('assets/img/logoCreioSecundaria.png') }}" class="logoMenu" alt="Logo">
+      <img src="{{ asset('assets/img/logoCreio.png') }}" class="logoMenu" alt="Logo">
     </div>
 
     @auth

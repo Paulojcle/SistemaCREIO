@@ -173,7 +173,7 @@
         <i class="bi bi-calendar-x ag-vazio-icon"></i>
         <p>Nenhum agendamento para este dia.</p>
         @if(!$profissionalFixo && auth()->user()->temPermissao('agendamentos.gerenciar'))
-          <a href="{{ route('atendimento.lancar') }}" class="ag-btn-novo ag-btn-novo--outline">
+          <a href="{{ route('agendamentos.create') }}" class="ag-btn-novo ag-btn-novo--outline">
             <i class="bi bi-plus-lg"></i> Criar agendamento
           </a>
         @endif

@@ -8,6 +8,8 @@
   --menu-bg: transparent;
   --menu-main: #163C25;
   --dropdown-bg: #ffffff;
+
+  --sidebar-w: 22%;
 }
 
 *{ box-sizing: border-box; }
@@ -40,7 +42,9 @@ body{
   position: fixed;
   left: 0;
   top: 0;
-  width: 280px;
+  width: var(--sidebar-w);
+  min-width: 200px;
+  max-width: 300px;
   height: 100vh;
   padding-top: 50px;
   display: flex;
@@ -50,7 +54,7 @@ body{
 }
 
 .divLogo{
-  width: 280px;
+  width: 100%;
   display: flex;
   margin-bottom: 18px;
   justify-content: center;
@@ -58,8 +62,12 @@ body{
 }
 
 .logoMenu{
-  width: 45px;
-  height: 40px;
+  width: 110px;
+  height: auto;
+  object-fit: contain;
+  background: rgba(255,255,255,0.92);
+  border-radius: 8px;
+  padding: 5px 10px;
 }
 
 .menu-box{
@@ -283,15 +291,68 @@ body{
 }
 
 .content{
-  margin-left: 280px;
+  margin-left: clamp(200px, var(--sidebar-w), 300px);
   padding: 24px;
   min-height: 100vh;
+  width: calc(100% - clamp(200px, var(--sidebar-w), 300px));
 }
 
 main{
-  margin-left: 280px;
-  width: calc(100vw - 280px);
+  margin-left: clamp(200px, var(--sidebar-w), 300px);
+  width: calc(100% - clamp(200px, var(--sidebar-w), 300px));
   min-height: 100vh;
   padding: 24px;
   box-sizing: border-box;
+}
+
+/* ============================= */
+/* RESPONSIVIDADE                */
+/* ============================= */
+
+@media (min-width: 1600px) {
+  .sidebar  { max-width: 360px; }
+  .content,
+  main {
+    margin-left: 360px;
+    width: calc(100% - 360px);
+  }
+}
+
+@media (min-width: 1920px) {
+  .sidebar  { max-width: 400px; }
+  .content,
+  main {
+    margin-left: 400px;
+    width: calc(100% - 400px);
+  }
+}
+
+@media (max-width: 1100px) {
+  :root { --sidebar-w: 26%; }
+}
+
+@media (max-width: 860px) {
+  :root { --sidebar-w: 30%; }
+
+  .menu-box { width: 90%; }
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+    height: auto;
+    position: relative;
+    padding-top: 16px;
+  }
+
+  .content, main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .d-flex {
+    flex-direction: column;
+  }
 }

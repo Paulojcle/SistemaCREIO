@@ -33,19 +33,24 @@ class ProfissionalController extends Controller
     public function store(Request $request)
     {
 
-        $request->validate([        
-            'nome'            => 'required|string|      max:255',
-            'data_nascimento' => 'nullable|dat      e',
-            'rg'              => 'nullable|string|      max:20',
+        $request->validate([
+            'nome'            => 'required|string|max:255',
+            'data_nascimento' => 'nullable|date',
+            'rg'              => 'nullable|string|max:20',
             'cpf'             => 'nullable|string|max:14',
             'celular'         => 'nullable|string|max:20',
+            'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'numero_registro' => 'nullable|string|max:30',
             'profissao'       => 'nullable|string|max:255',
             'especializacao'  => 'nullable|string|max:255',
-            'documentos'      => 'nullable|ar       ray',
-            'documentos.*'    => 'file|mimes:pdf,       jpg,jpeg,png|max:10240',
+            'documentos'      => 'nullable|array',
+            'documentos.*'    => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('profissionais/fotos', 'public');
+        }
 
         $profissional = Profissional::create([
             'nome'             => $request->nome,
@@ -53,6 +58,7 @@ class ProfissionalController extends Controller
             'rg'               => $request->rg,
             'cpf'              => $request->cpf,
             'celular'          => $request->celular,
+            'foto'             => $fotoPath,
             'numero_registro'  => $request->numero_registro,
             'profissao'        => $request->profissao,
             'especializacao'   => $request->especializacao,
@@ -119,14 +125,15 @@ class ProfissionalController extends Controller
             'rg'              => 'nullable|string|max:20',
             'cpf'             => 'nullable|string|max:14',
             'celular'         => 'nullable|string|max:20',
+            'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'numero_registro' => 'nullable|string|max:30',
             'profissao'       => 'nullable|string|max:255',
             'especializacao'  => 'nullable|string|max:255',
             'documentos'      => 'nullable|array',
             'documentos.*'    => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
-        
-        $profissional->update([
+
+        $dados = [
             'nome'             => $request->nome,
             'data_nascimento'  => $request->data_nascimento,
             'rg'               => $request->rg,
@@ -135,7 +142,16 @@ class ProfissionalController extends Controller
             'numero_registro'  => $request->numero_registro,
             'profissao'        => $request->profissao,
             'especializacao'   => $request->especializacao,
-        ]);
+        ];
+
+        if ($request->hasFile('foto')) {
+            if ($profissional->foto) {
+                \Storage::disk('public')->delete($profissional->foto);
+            }
+            $dados['foto'] = $request->file('foto')->store('profissionais/fotos', 'public');
+        }
+
+        $profissional->update($dados);
 
         $this->registrarLog('editou', 'Profissional', "Editou o profissional {$profissional->nome}");
 

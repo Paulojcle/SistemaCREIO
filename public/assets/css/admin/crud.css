@@ -368,3 +368,54 @@
   color: #94a3b8;
   font-size: 16px;
 }
+
+.table-responsive-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .aluno-page { padding: 12px; }
+
+  .aluno-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .btn-nova {
+    width: 100%;
+    text-align: center;
+  }
+
+  .aluno-title { font-size: 18px; }
+
+  .custom-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .custom-table thead th,
+  .custom-table tbody td {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .btn-action {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .aluno-card { padding: 16px 12px; }
+  .aluno-title { font-size: 16px; }
+}

@@ -121,3 +121,16 @@
 }
 
 .chip input{ transform: translateY(1px); }
+
+@media (max-width: 768px) {
+  .aluno-page { padding: 12px; }
+  .aluno-card { padding: 16px; border-radius: 12px; }
+  .aluno-title { font-size: 16px; }
+  .upload-box { width: 140px; height: 160px; }
+  .soft-radio { flex-wrap: wrap; gap: 8px; }
+}
+
+@media (max-width: 480px) {
+  .aluno-card { padding: 12px; }
+  .upload-box { width: 120px; height: 140px; }
+}

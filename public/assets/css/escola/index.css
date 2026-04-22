@@ -132,3 +132,19 @@ body {
     margin-bottom: 25px;
     font-weight: 500;
 }
+
+@media (max-width: 768px) {
+  .escola-page { padding: 12px; }
+  .escola-card { padding: 20px 16px; border-radius: 12px; }
+  .header-flex { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .btn-nova { width: 100%; text-align: center; }
+  .escola-title { font-size: 18px; }
+  .custom-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .custom-table thead th,
+  .custom-table tbody td { padding: 10px; font-size: 13px; }
+  .btn-action { padding: 6px 10px; font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  .escola-card { padding: 16px 12px; }
+}

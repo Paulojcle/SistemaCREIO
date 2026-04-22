@@ -9,7 +9,12 @@
     <div class="prof-card">
 
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <h1 class="prof-title mb-0">INFORMAÇÕES DO PROFISSIONAL</h1>
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ $profissional->foto ? Storage::url($profissional->foto) : 'https://ui-avatars.com/api/?name='.urlencode($profissional->nome).'&background=c8d8e8&color=555&size=100' }}"
+                    alt="Foto de {{ $profissional->nome }}"
+                    style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:2px solid #ddd;flex-shrink:0;">
+                <h1 class="prof-title mb-0">INFORMAÇÕES DO PROFISSIONAL</h1>
+            </div>
             <span class="badge-status {{ $profissional->ativo ? 'badge-ativo' : 'badge-inativo' }}">
                 {{ $profissional->ativo ? 'Ativo' : 'Inativo' }}
             </span>

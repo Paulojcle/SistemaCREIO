@@ -377,3 +377,15 @@ select.soft-input {
 .confirm-btn--danger:hover {
   background: #a93226;
 }
+
+@media (max-width: 768px) {
+  .escola-page { padding: 12px; }
+  .escola-card { padding: 20px 16px; border-radius: 12px; }
+  .escola-title { font-size: 16px; }
+  .btn-soft-primary,
+  .btn-soft-secondary { width: 100%; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .escola-card { padding: 16px 12px; }
+}

@@ -41,6 +41,22 @@
         <h2 class="section-title">Dados Pessoais</h2>
       </div>
 
+      {{-- Seletor de foto --}}
+      <div class="foto-picker-wrap">
+        <span class="foto-picker-label">Foto do Profissional</span>
+        <label class="foto-picker-btn" for="foto" title="Clique para alterar a foto">
+          <img id="foto-preview"
+            src="{{ $profissional->foto ? Storage::url($profissional->foto) : 'https://ui-avatars.com/api/?name='.urlencode($profissional->nome).'&background=c8d8e8&color=555&size=110' }}"
+            alt="Foto de {{ $profissional->nome }}">
+          <div class="foto-picker-overlay">
+            <i class="bi bi-camera-fill"></i>
+            <span>Alterar</span>
+          </div>
+        </label>
+        <span class="foto-picker-hint">JPG ou PNG • máx. 2 MB</span>
+        <input type="file" name="foto" id="foto" class="d-none" accept="image/jpeg,image/png" onchange="previewFoto(event)">
+      </div>
+
       <div class="row g-3">
 
         <div class="col-12 col-md-8">
@@ -202,6 +218,16 @@
 </div>
 
 <script>
+  function previewFoto(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('foto-preview').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
   // ── Formações dinâmicas ───────────────────────────────────────
   document.getElementById('add-formacao').addEventListener('click', function() {
     var wrapper = document.getElementById('formacoes-wrapper');

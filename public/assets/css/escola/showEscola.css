@@ -140,3 +140,17 @@
 .alert-icon {
     font-size: 20px;
 }
+
+@media (max-width: 768px) {
+  .escola-page { padding: 16px 12px; }
+  .escola-card { padding: 24px 16px; border-radius: 14px; }
+  .escola-title { font-size: 18px; }
+  .doc-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .btn-soft-primary,
+  .btn-soft-secondary { width: 100%; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .escola-card { padding: 16px 12px; }
+  .info-value { font-size: 14px; }
+}

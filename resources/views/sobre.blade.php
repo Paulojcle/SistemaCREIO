@@ -24,10 +24,12 @@
 
     .sobre-hero-logo {
         height: 90px;
+        max-width: 200px;
         object-fit: contain;
         flex-shrink: 0;
-        filter: brightness(0) invert(1);
-        opacity: 0.9;
+        background: #fff;
+        border-radius: 14px;
+        padding: 8px 12px;
     }
 
     .sobre-hero-text h1 {
@@ -163,6 +165,7 @@
 
     .sobre-parceiro-card img {
         height: 80px;
+        max-width: 100%;
         object-fit: contain;
     }
 
@@ -206,7 +209,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
         text-align: center;
         transition: all .2s ease;
     }
@@ -216,60 +219,33 @@
         box-shadow: 0 6px 20px rgba(22,60,37,0.1);
     }
 
-    .sobre-equipe-foto-wrapper {
-        width: 130px;
-        height: 130px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 3px solid #e8f5ee;
-        flex-shrink: 0;
-    }
-
-    .sobre-equipe-foto-wrapper img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .sobre-equipe-foto-wrapper--zoom img {
-        width: 160%;
-        height: 160%;
-        margin-left: -10%;
-        margin-top: -28%;
-    }
-
-    .sobre-equipe-foto-placeholder {
-        width: 96px;
-        height: 96px;
-        border-radius: 50%;
-        background: #f1f5f9;
-        border: 2px dashed #cbd5e1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #94a3b8;
-        font-size: 0.7rem;
-    }
-
     .sobre-equipe-nome {
         font-size: 0.95rem;
         font-weight: 700;
         color: #1e293b;
+        margin-top: 4px;
     }
 
     .sobre-equipe-cargo {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 600;
         color: #163C25;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
     }
 
-    .sobre-equipe-info {
-        font-size: 0.8rem;
-        color: #64748b;
-        line-height: 1.6;
+    .sobre-equipe-email {
+        font-size: 0.83rem;
+        color: #475569;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color .15s;
+    }
+
+    .sobre-equipe-email:hover {
+        color: #163C25;
     }
 
     /* ── RODAPÉ ── */
@@ -299,7 +275,7 @@
 
     {{-- HERO --}}
     <div class="sobre-hero">
-        <img src="{{ asset('assets/img/logoCreioSecundaria.png') }}" alt="Logo CREIO" class="sobre-hero-logo">
+        <img src="{{ asset('assets/img/logoCreio.png') }}" alt="Logo CREIO" class="sobre-hero-logo">
         <div class="sobre-hero-text">
             <h1>CREIO</h1>
             <p>Centro de Referência da Educação Inclusiva Operacional<br>
@@ -321,43 +297,6 @@
             profissionais, escolas parceiras e agendamentos, contribuindo para uma educação inclusiva
             mais organizada e eficiente no município.
         </p>
-    </div>
-
-    {{-- EQUIPE --}}
-    <div class="sobre-card">
-        <p class="sobre-section-label">Equipe</p>
-        <h2 class="sobre-section-title">Desenvolvido por</h2>
-        <div class="sobre-equipe-grid">
-
-            <div class="sobre-equipe-card">
-                <div class="sobre-equipe-foto-wrapper">
-                    <img src="{{ asset('assets/img/imagemWoquiton.jpeg') }}" alt="Prof. Dr. Woquiton Lima Fernandes">
-                </div>
-                <div>
-                    <div class="sobre-equipe-cargo">Orientador</div>
-                    <div class="sobre-equipe-nome">Prof. Dr. Woquiton Lima Fernandes</div>
-                </div>
-                <div class="sobre-equipe-info">
-                    Doutor em Educação Especial pela UFSCar<br>
-                    Professor do IF Baiano e do PPGEduF - UNEB Campus Guanambi
-                </div>
-            </div>
-
-            <div class="sobre-equipe-card">
-                <div class="sobre-equipe-foto-wrapper sobre-equipe-foto-wrapper--zoom">
-                    <img src="{{ asset('assets/img/imagemPaulo.jpeg') }}" alt="Paulo José Pereira Trindade">
-                </div>
-                <div>
-                    <div class="sobre-equipe-cargo">Desenvolvedor</div>
-                    <div class="sobre-equipe-nome">Paulo José Pereira Trindade</div>
-                </div>
-                <div class="sobre-equipe-info">
-                    Estudante de Tecnologia em Análise e Desenvolvimento de Sistemas
-                    IF Baiano - Campus Guanambi
-                </div>
-            </div>
-
-        </div>
     </div>
 
     {{-- FUNCIONALIDADES --}}
@@ -432,7 +371,7 @@
             <div class="sobre-parceiro-card">
                     <img src="{{ asset('assets/img/logoCreio.png') }}" alt="Secretaria de Educação">
                 <div>
-                    <div class="sobre-parceiro-nome">Centro de Referência da Educação Especial Operacional</div>
+                    <div class="sobre-parceiro-nome">Centro de Referência da Educação Inclusiva Operacional</div>
                     <div class="sobre-parceiro-tipo">Instituição beneficiada</div>
                 </div>
             </div>
@@ -451,6 +390,35 @@
                     <div class="sobre-parceiro-nome">IF Baiano</div>
                     <div class="sobre-parceiro-tipo">Instituição de Ensino e Pesquisa</div>
                 </div>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- EQUIPE --}}
+    <div class="sobre-card">
+        <p class="sobre-section-label">Equipe</p>
+        <h2 class="sobre-section-title">Desenvolvido por</h2>
+        <div class="sobre-equipe-grid">
+
+            <div class="sobre-equipe-card">
+                <div>
+                    <div class="sobre-equipe-cargo">Orientador</div>
+                    <div class="sobre-equipe-nome">Prof. Dr. Woquiton Lima Fernandes</div>
+                </div>
+                <a href="mailto:woquiton.fernandes@ifbaiano.edu.br" class="sobre-equipe-email">
+                    <i class="bi bi-envelope"></i> woquiton.fernandes@ifbaiano.edu.br
+                </a>
+            </div>
+
+            <div class="sobre-equipe-card">
+                <div>
+                    <div class="sobre-equipe-cargo">Desenvolvedor</div>
+                    <div class="sobre-equipe-nome">Paulo José Pereira Trindade</div>
+                </div>
+                <a href="mailto:paulo.aluno58@gmail.com" class="sobre-equipe-email">
+                    <i class="bi bi-envelope"></i> paulo.aluno58@gmail.com
+                </a>
             </div>
 
         </div>

@@ -17,6 +17,7 @@ class Profissional extends Model
     'rg',
     'cpf',
     'celular',
+    'foto',
     'numero_registro',
     'profissao',
     'especializacao',

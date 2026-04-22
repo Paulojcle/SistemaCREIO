@@ -15,8 +15,8 @@ body {
 /* Card central */
 .login-card {
     background: white;
-    width: 50%;
-    max-width: 50%;
+    width: 70%;
+    max-width: 580px;
     border-radius: 12px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     padding: 40px;
@@ -26,18 +26,53 @@ body {
 .containerLogin {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 40px;
+    justify-content: center;
+    gap: 20px;
 }
 
 /* Logo */
+.logo {
+    flex-shrink: 0;
+}
+
 .logo img {
-    width: 250px;
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    display: block;
 }
 
 /* Formulário */
 form {
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
+}
+
+/* ── Responsividade ── */
+@media (max-width: 640px) {
+    .login-card {
+        padding: 32px 24px;
+    }
+
+    .containerLogin {
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+    }
+
+    .logo img {
+        max-width: 160px;
+    }
+
+    form {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .login-card {
+        padding: 24px 16px;
+    }
 }
 
 /* Campos */

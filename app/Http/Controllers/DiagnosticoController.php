@@ -26,7 +26,7 @@ class DiagnosticoController extends Controller
 
         $request->validate([
             'nome'       =>'required|string|max:100',
-        ])
+        ]);
 
         $diagnostico = Diagnostico::create([
             'nome' => $request->nome,
