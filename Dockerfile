@@ -22,6 +22,8 @@ COPY . .
 
 RUN composer install --optimize-autoloader --no-dev
 
+RUN ln -sf /var/www/storage/app/public /var/www/public/storage
+
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 9000

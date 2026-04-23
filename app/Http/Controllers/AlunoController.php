@@ -10,6 +10,7 @@ use App\Models\Escola;
 use App\Models\OrigemEncaminhamento;
 use Illuminate\Http\Request;
 use App\Traits\RegistraLog;
+use Illuminate\Support\Facades\Storage;
 
 class AlunoController extends Controller
 {
@@ -41,7 +42,7 @@ class AlunoController extends Controller
         if ($request->filled('filiacao')) {
             $query->where(function ($q) use ($request) {
                 $q->where('filiacao1', 'like', '%' . $request->filiacao . '%')
-                  ->orWhere('filiacao2', 'like', '%' . $request->filiacao . '%');
+                    ->orWhere('filiacao2', 'like', '%' . $request->filiacao . '%');
             });
         }
 
@@ -51,7 +52,7 @@ class AlunoController extends Controller
             });
         }
 
-        if($request->filled('diagnostico_id')){
+        if ($request->filled('diagnostico_id')) {
             $query->whereHas('diagnosticos', function ($q) use ($request) {
                 $q->where('diagnostico.id', $request->diagnostico_id);
             });
@@ -87,7 +88,7 @@ class AlunoController extends Controller
             'sexo'            => 'required|in:M,F',
             'fot'             => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'documentos'      => 'nullable|array',
-            'documentos.*'    => 'file|mimes:pdf,jpg, jpeg, png|max:10240',     
+            'documentos.*'    => 'file|mimes:pdf,jpg, jpeg, png|max:10240',
         ], [
             'nome.required'            => 'O nome do aluno é obrigatório.',
             'data_nascimento.required' => 'A data de nascimento é obrigatória.',
@@ -100,7 +101,7 @@ class AlunoController extends Controller
         $aluno = Aluno::create($data);
         $this->registrarLog('criou', 'Aluno', "Cadastrou o aluno {$aluno->nome}");
 
-        if($request->hasFile('foto')){
+        if ($request->hasFile('foto')) {
             $caminho = $request->file('foto')->store('fotos/alunos', 'public');
             $aluno->update(['foto' => $caminho]);
         }
@@ -113,8 +114,8 @@ class AlunoController extends Controller
         ])->toArray();
         $aluno->listasEspera()->sync($listasSync);
 
-        if ($request->hasFile('documentos')){
-            foreach($request->file('documentos') as $arquivo){
+        if ($request->hasFile('documentos')) {
+            foreach ($request->file('documentos') as $arquivo) {
                 $caminho = $arquivo->store('documentos/alunos', 'public');
                 $aluno->documentosAluno()->create([
                     'nome_original' => $arquivo->getClientOriginalName(),
@@ -174,12 +175,19 @@ class AlunoController extends Controller
             'documentos'   => 'nullable|array',
             'documentos.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
-        
+
         $data = $request->except(['deficiencias', 'diagnosticos', 'listasEspera', 'documentos', '_token', '_method']);
         $data['possui_laudo'] = $request->boolean('possui_laudo');
 
 
-        if ($request->hasFile('foto')){
+        if ($request->foto_remover) {
+            if ($aluno->foto) {
+                Storage::disk('public')->delete($aluno->foto);
+            }
+            $data['foto'] = null;
+        }
+
+        if ($request->hasFile('foto')) {
             $caminho = $request->file('foto')->store('fotos/alunos', 'public');
             $data['foto'] = $caminho;
         }
@@ -211,9 +219,10 @@ class AlunoController extends Controller
         return redirect()->route('alunos.show', $aluno->id)->with('success', "Aluno {$aluno->nome} atualizado com sucesso!");
     }
 
-    public function ficha(Aluno $aluno){
-        $aluno->load( 'escola', 'deficiencias', 'diagnosticos', 'origemEncaminhamento');
-        return view ('aluno.fichaAluno', compact('aluno'));
+    public function ficha(Aluno $aluno)
+    {
+        $aluno->load('escola', 'deficiencias', 'diagnosticos', 'origemEncaminhamento');
+        return view('aluno.fichaAluno', compact('aluno'));
     }
 
 
@@ -256,7 +265,5 @@ class AlunoController extends Controller
         $this->registrarLog('reativou', 'Aluno', "Reativou o aluno {$aluno->nome}");
 
         return redirect()->route('alunos.index')->with('success', "Aluno {$aluno->nome} reativado com sucesso!");
-
-        
     }
 }
