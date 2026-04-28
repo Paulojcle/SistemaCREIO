@@ -47,6 +47,7 @@ class SuperUserSeeder extends Seeder
                 'lastName'  => 'José',
                 'password'  => Hash::make('P@ulo123'),
                 'ativo'     => true,
+                'is_super'  => true,
             ]
         );
 

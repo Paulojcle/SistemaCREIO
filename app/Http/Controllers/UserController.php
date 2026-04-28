@@ -17,7 +17,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $usuarios = User::with('perfis')->get();
+        $usuarios = User::with('perfis')
+            ->when(!auth()->user()->is_super, fn($q) => $q->where('is_super', false))
+            ->get();
         return view('usuarios.index', compact('usuarios'));
     }
 
@@ -42,7 +44,19 @@ class UserController extends Controller
             'email'     => 'required|email|unique:users,email',
             'password'  => ['required', 'string', 'min:8', 'confirmed', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[@$!%*#?&]/'],
             'perfis'    => 'required|array',
-
+        ], [
+            'firstName.required' => 'O nome é obrigatório.',
+            'firstName.max'      => 'O nome deve ter no máximo 50 caracteres.',
+            'lastName.required'  => 'O sobrenome é obrigatório.',
+            'lastName.max'       => 'O sobrenome deve ter no máximo 50 caracteres.',
+            'email.required'     => 'O e-mail é obrigatório.',
+            'email.email'        => 'Informe um e-mail válido.',
+            'email.unique'       => 'Este e-mail já está em uso.',
+            'password.required'  => 'A senha é obrigatória.',
+            'password.min'       => 'A senha deve ter no mínimo 8 caracteres.',
+            'password.confirmed' => 'A confirmação da senha não coincide.',
+            'password.regex'     => 'A senha deve conter pelo menos uma letra maiúscula, um número e um caractere especial (@$!%*#?&).',
+            'perfis.required'    => 'Selecione pelo menos um perfil.',
         ]);
 
         $usuario = User::create([
@@ -78,6 +92,10 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $usuario = User::with('profissional')->findOrFail($id);
+
+        if ($usuario->is_super && auth()->id() !== $usuario->id) {
+            return redirect()->route('usuarios.index')->with('error', 'Acesso negado.');
+        }
         $perfis = Perfil::all();
         $perfisDoUsuario = $usuario->perfis->pluck('id')->toArray();
         $profissionais = Profissional::where(function($q) use ($usuario) {
@@ -93,12 +111,28 @@ class UserController extends Controller
     {
         $usuario = User::findOrFail($id);
 
+        if ($usuario->is_super && auth()->id() !== $usuario->id) {
+            return redirect()->route('usuarios.index')->with('error', 'Acesso negado.');
+        }
+
         $request->validate([
             'firstName' => 'required|string|max:50',
             'lastName'  => 'required|string|max:50',
             'email'     => 'required|email|unique:users,email,' . $usuario->id,
             'password'  => ['nullable', 'string', 'min:8', 'confirmed', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[@$!%*#?&]/'],
             'perfis'    => 'required|array',
+        ], [
+            'firstName.required' => 'O nome é obrigatório.',
+            'firstName.max'      => 'O nome deve ter no máximo 50 caracteres.',
+            'lastName.required'  => 'O sobrenome é obrigatório.',
+            'lastName.max'       => 'O sobrenome deve ter no máximo 50 caracteres.',
+            'email.required'     => 'O e-mail é obrigatório.',
+            'email.email'        => 'Informe um e-mail válido.',
+            'email.unique'       => 'Este e-mail já está em uso.',
+            'password.min'       => 'A senha deve ter no mínimo 8 caracteres.',
+            'password.confirmed' => 'A confirmação da senha não coincide.',
+            'password.regex'     => 'A senha deve conter pelo menos uma letra maiúscula, um número e um caractere especial (@$!%*#?&).',
+            'perfis.required'    => 'Selecione pelo menos um perfil.',
         ]);
 
         $usuario->update([
@@ -130,6 +164,11 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $usuario = User::findOrFail($id);
+
+        if ($usuario->is_super) {
+            return redirect()->route('usuarios.index')->with('error', 'Acesso negado.');
+        }
+
         $usuario->update(['ativo' => false]);
         $this->registrarLog('desativou', 'Usuário', "Desativou o usuário {$usuario->firstName} {$usuario->lastName}");
 
